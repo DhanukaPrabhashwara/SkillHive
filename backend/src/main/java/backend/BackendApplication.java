@@ -28,8 +28,8 @@ public class BackendApplication {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.gmail.com");
 		mailSender.setPort(587);
-		mailSender.setUsername("dhanukaprabha@gmail.com");//email
-		mailSender.setPassword("jzlg xmkt fsfe wsrm");//password
+		mailSender.setUsername("dhanukaprabha@gmail.com");
+		mailSender.setPassword("jzlg xmkt fsfe wsrm");
 
 		Properties props = mailSender.getJavaMailProperties();
 		props.put("mail.transport.protocol", "smtp");
