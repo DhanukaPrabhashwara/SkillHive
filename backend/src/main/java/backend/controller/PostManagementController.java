@@ -94,10 +94,10 @@ public class PostManagementController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
 
-//    @GetMapping
-//    public List<PostManagementModel> getAllPosts() {
-//        return postRepository.findAll();
-//    }
+    @GetMapping
+    public List<PostManagementModel> getAllPosts() {
+        return postRepository.findAll();
+    }
 
     @GetMapping("/user/{userID}")
     public List<PostManagementModel> getPostsByUser(@PathVariable String userID) {
