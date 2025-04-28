@@ -105,7 +105,6 @@ public class PostManagementController {
                 .filter(post -> post.getUserID().equals(userID))
                 .collect(Collectors.toList());
     }
-    //fixed an error
 
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable String postId) {
