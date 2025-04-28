@@ -99,7 +99,12 @@ public class PostManagementController {
         return postRepository.findAll();
     }
 
-
+    @GetMapping("/user/{userID}")
+    public List<PostManagementModel> getPostsByUser(@PathVariable String userID) {
+        return postRepository.findAll().stream()
+                .filter(post -> post.getUserID().equals(userID))
+                .collect(Collectors.toList());
+    }
 
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable String postId) {
