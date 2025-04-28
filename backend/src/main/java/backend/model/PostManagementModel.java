@@ -84,9 +84,9 @@ public class PostManagementModel {
         return comments;
     }
 
-//    public void setComments(List<Comment> comments) {
-//        this.comments = comments;
-//    }
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public String getCategory() {
         return category;
