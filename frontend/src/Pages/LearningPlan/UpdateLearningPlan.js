@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { IoMdAdd } from "react-icons/io";
-import './post.css'
+import '../../Components/NavBar/post.css';
+
 import NavBar from '../../Components/NavBar/NavBar';
 import { HiCalendarDateRange } from "react-icons/hi2";
 function UpdateLearningPost() {
