@@ -1,7 +1,7 @@
 .noty_topic {
   font-size: 22px;
   font-weight: 500;
-  color: #000;
+  color: #7a7171;
   text-transform: capitalize;
 }
 .noty_time {
@@ -18,7 +18,7 @@
   border-radius: 4px;
   padding: 8px 15px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
