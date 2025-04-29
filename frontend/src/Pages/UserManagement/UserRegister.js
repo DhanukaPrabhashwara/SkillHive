@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import GoogalLogo from './img/glogo.png'
+import './userRL.css'
 import { IoMdAdd } from "react-icons/io";
 function UserRegister() {
     const [formData, setFormData] = useState({
