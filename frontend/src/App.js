@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import UserLogin from "./Pages/UserManagement/UserLogin";
 import UserRegister from "./Pages/UserManagement/UserRegister";
@@ -57,6 +59,7 @@ function App() {
 
   return (
     <div>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <React.Fragment>
         <Routes>
           {/* Public Routes */}
