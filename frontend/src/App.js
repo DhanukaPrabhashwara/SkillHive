@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router";
 import { useNavigate } from "react-router-dom";
+// Importing all pages (components) for different routes
 import AddLearningPlan from "./Pages/LearningPlan/AddLearningPlan";
 import AllLearningPlan from "./Pages/LearningPlan/AllLearningPlan";
 import UpdateLearningPlan from "./Pages/LearningPlan/UpdateLearningPlan";
@@ -20,52 +21,57 @@ import MyAllPost from "./Pages/PostManagement/MyAllPost";
 import GoogalUserPro from "./Pages/UserManagement/GoogalUserPro";
 import MyLearningPlan from "./Pages/LearningPlan/MyLearningPlan";
 
-//app.js
+// ProtectedRoute Component
+// This component ensures that certain routes are only accessible if the user is logged in (has a valid "userID").
 function ProtectedRoute({ children }) {
-  const userID = localStorage.getItem("userID");
+  const userID = localStorage.getItem("userID"); // Retrieve userID from localStorage
   if (!userID) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" />; // If no userID exists, redirect to the login page
   }
-  return children;
+  return children; // If userID exists, render the child components (i.e., protected routes)
 }
 
 function App() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook to programmatically navigate between routes
 
+  // Effect to handle Google OAuth callback and store user data in localStorage
   useEffect(() => {
+    // If the current URL path is "/oauth2/success", it's an indication that the user has logged in through Google OAuth
     if (window.location.pathname === "/oauth2/success") {
+      // Retrieve the user data from URL query parameters
       const params = new URLSearchParams(window.location.search);
       const userID = params.get("userID");
       const name = params.get("name");
-      const googleProfileImage = decodeURIComponent(params.get("googleProfileImage")); // Decode the URL
+      const googleProfileImage = decodeURIComponent(params.get("googleProfileImage")); // Decode the Google Profile Image URL
 
       if (userID && name) {
+        // Store the user data in localStorage for future reference
         localStorage.setItem("userID", userID);
         localStorage.setItem("userType", "google");
         if (googleProfileImage) {
-          localStorage.setItem("googleProfileImage", googleProfileImage); // Save decoded URL
+          localStorage.setItem("googleProfileImage", googleProfileImage); // Save the decoded URL of the profile image
         }
-        navigate("/allPost");
+        navigate("/allPost"); // Redirect the user to the "All Posts" page after successful login
       } else {
         alert("Login failed. Missing user information.");
       }
     }
-  }, [navigate]);
+  }, [navigate]); // Run the effect when the component is mounted or the URL changes
 
   return (
     <div>
       <React.Fragment>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<UserLogin />} />
-          <Route path="/register" element={<UserRegister />} />
+          <Route path="/" element={<UserLogin />} /> {/* Login page */}
+          <Route path="/register" element={<UserRegister />} /> {/* Register page */}
 
-          {/* Protected Routes */}
+          {/* Protected Routes (Requires user to be logged in) */}
           <Route
             path="/addLearningPlan"
             element={
               <ProtectedRoute>
-                <AddLearningPlan />
+                <AddLearningPlan /> {/* Page to add a new learning plan */}
               </ProtectedRoute>
             }
           />
@@ -73,15 +79,15 @@ function App() {
             path="/allLearningPlan"
             element={
               <ProtectedRoute>
-                <AllLearningPlan />
+                <AllLearningPlan /> {/* Page to view all learning plans */}
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/myLearningPlan"
             element={
               <ProtectedRoute>
-                <MyLearningPlan />
+                <MyLearningPlan /> {/* Page to view current user's learning plans */}
               </ProtectedRoute>
             }
           />
@@ -89,7 +95,7 @@ function App() {
             path="/updateLearningPlan/:id"
             element={
               <ProtectedRoute>
-                <UpdateLearningPlan />
+                <UpdateLearningPlan /> {/* Page to update an existing learning plan */}
               </ProtectedRoute>
             }
           />
@@ -97,7 +103,7 @@ function App() {
             path="/updateUserProfile/:id"
             element={
               <ProtectedRoute>
-                <UpdateUserProfile />
+                <UpdateUserProfile /> {/* Page to update user profile information */}
               </ProtectedRoute>
             }
           />
@@ -105,15 +111,15 @@ function App() {
             path="/userProfile"
             element={
               <ProtectedRoute>
-                <UserProfile />
+                <UserProfile /> {/* Page to view user profile */}
               </ProtectedRoute>
             }
           />
-             <Route
+          <Route
             path="/googalUserPro"
             element={
               <ProtectedRoute>
-                <GoogalUserPro />
+                <GoogalUserPro /> {/* Page for Google user profile details */}
               </ProtectedRoute>
             }
           />
@@ -121,7 +127,7 @@ function App() {
             path="/addAchievements"
             element={
               <ProtectedRoute>
-                <AddAchievements />
+                <AddAchievements /> {/* Page to add new achievements */}
               </ProtectedRoute>
             }
           />
@@ -129,7 +135,7 @@ function App() {
             path="/allAchievements"
             element={
               <ProtectedRoute>
-                <AllAchievements />
+                <AllAchievements /> {/* Page to view all achievements */}
               </ProtectedRoute>
             }
           />
@@ -137,7 +143,7 @@ function App() {
             path="/myAchievements"
             element={
               <ProtectedRoute>
-                <MyAchievements />
+                <MyAchievements /> {/* Page to view the current user's achievements */}
               </ProtectedRoute>
             }
           />
@@ -145,7 +151,7 @@ function App() {
             path="/updateAchievements/:id"
             element={
               <ProtectedRoute>
-                <UpdateAchievements />
+                <UpdateAchievements /> {/* Page to update an existing achievement */}
               </ProtectedRoute>
             }
           />
@@ -153,7 +159,7 @@ function App() {
             path="/notifications"
             element={
               <ProtectedRoute>
-                <NotificationsPage />
+                <NotificationsPage /> {/* Page to manage notifications */}
               </ProtectedRoute>
             }
           />
@@ -161,7 +167,7 @@ function App() {
             path="/addNewPost"
             element={
               <ProtectedRoute>
-                <AddNewPost />
+                <AddNewPost /> {/* Page to create a new post */}
               </ProtectedRoute>
             }
           />
@@ -169,15 +175,15 @@ function App() {
             path="/allPost"
             element={
               <ProtectedRoute>
-                <AllPost />
+                <AllPost /> {/* Page to view all posts */}
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/myAllPost"
             element={
               <ProtectedRoute>
-                <MyAllPost />
+                <MyAllPost /> {/* Page to view posts created by the current user */}
               </ProtectedRoute>
             }
           />
@@ -185,7 +191,7 @@ function App() {
             path="/updatePost/:id"
             element={
               <ProtectedRoute>
-                <UpdatePost />
+                <UpdatePost /> {/* Page to update an existing post */}
               </ProtectedRoute>
             }
           />
