@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './userRL.css'
-import GoogalLogo from './img/glogo.png'
+import './user.css';
+import GoogalLogo from './img/glogo.png';
+
 function UserLogin() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const navigate = useNavigate();
@@ -36,30 +37,32 @@ function UserLogin() {
   };
 
   return (
-    <div className="Auth_container">
-      <div className="Auth_innerContainer">
+    <div className="register-container">
+      <div className="register-background">
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+      </div>
+      
+      <div className="register-card">
+        <div className="register-header">
+          <h1>Welcome Back</h1>
+          <p>Continue your learning journey</p>
+        </div>
 
-        <div className="Auth_content new_content">
-          <div className="Auth_logo"></div>
-          <div className='login_content'>
-            <p className="Auth_heading">Login Your Account </p>
-            
-          </div>
-          <form onSubmit={handleSubmit} className="Auth_form">
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Email Address</label>
+        <form onSubmit={handleSubmit} className="register-form-new">
+          <div className="form-columns">
+            <div className="input-group">
               <input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder="Email Address"
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="Auth_input"
               />
             </div>
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Password</label>
+            <div className="input-group">
               <input
                 type="password"
                 name="password"
@@ -67,28 +70,32 @@ function UserLogin() {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                className="Auth_input"
               />
             </div>
-            <button type="submit" className="Auth_button">Login</button>
-            <p className="Auth_signupPrompt">
-              Don’t have an account? <span onClick={() => (window.location.href = '/register')} className="Auth_signupLink">Sign up for free</span>
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="register-button">
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+              className="google-button"
+            >
+              <img src={GoogalLogo} alt='Google' className='glogo' />
+              Sign in with Google
+            </button>
+            <p className="login-link">
+              Don't have an account? <span onClick={() => (window.location.href = '/register')}>Sign up for free</span>
             </p>
-          </form>
-          <button
-            onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
-            className="Auth_googleButton"
-          >
-            <img src={GoogalLogo} alt='glogo' className='glogo' />
-            Sign in with Google
-          </button>
-        </div>
-        <div className="Auth_content">
-          <div className="Auth_content_img"></div>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );
 }
 
 export default UserLogin;
+
+

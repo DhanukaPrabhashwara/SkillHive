@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaPhone, FaTools } from 'react-icons/fa';
+import { FaEnvelope, FaPhone, FaTools, FaEdit } from 'react-icons/fa';
 import './UserProfile.css'
 import NavBar from '../../Components/NavBar/NavBar';
+
 export const fetchUserDetails = async (userId) => {
     try {
         const response = await fetch(`http://localhost:8080/user/${userId}`);
@@ -49,41 +50,49 @@ function UserProfile() {
     };
 
     return (
-        <div>
-            <div className='continer'>
-                <NavBar />
-                <div className='continSection'>
-                    {userData && userData.id === localStorage.getItem('userID') && (
-                        <div className="profile-card">
-                            {userData.profilePicturePath && (
-                                <img
-                                    src={`http://localhost:8080/uploads/profile/${userData.profilePicturePath}`}
-                                    alt="Profile"
-                                    className="profile-image"
-                                />
-                            )}
-                            <div className='pro_left_card'>
-                                <div className='user_data_card'>
-                                    <div className='user_data_card_new'>
-                                        <p className='username_card'>{userData.fullname}</p>
-                                        <p className='user_data_card_item_bio'> {userData.bio}</p>
-                                    </div>
-                                    <p className='user_data_card_item'><FaEnvelope className='user_data_card_icon' /> {userData.email}</p>
-                                    <p className='user_data_card_item'><FaPhone className='user_data_card_icon' />  {userData.phone}</p>
-                                    <p className='user_data_card_item'><FaTools className='user_data_card_icon' />{userData.skills.join(', ')}</p>
+        <div className="profile-page">
+            <NavBar />
+            <div className="profile-content">
+                {userData && userData.id === localStorage.getItem('userID') && (
+                    <div className="profile-card">
+                        {userData.profilePicturePath && (
+                            <img
+                                src={`http://localhost:8080/uploads/profile/${userData.profilePicturePath}`}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        )}
+                        <div className='pro_left_card'>
+                            <div className='user_data_card'>
+                                <div className='user_data_card_new'>
+                                    <p className='username_card'>{userData.fullname}</p>
+                                    <p className='user_data_card_item_bio'>{userData.bio}</p>
                                 </div>
-                                <div className="profile-actions">
-                                    <button onClick={() => navigate(`/updateUserProfile/${userData.id}`)} className="update-button">
-                                        Update
-                                    </button>
-                                    <button onClick={handleDelete} className="delete-button">
-                                        Delete
-                                    </button>
-                                </div>
+                                <p className='user_data_card_item'>
+                                    <FaEnvelope className='user_data_card_icon' /> {userData.email}
+                                </p>
+                                <p className='user_data_card_item'>
+                                    <FaPhone className='user_data_card_icon' /> {userData.phone}
+                                </p>
+                                <p className='user_data_card_item'>
+                                    <FaTools className='user_data_card_icon' /> {userData.skills ? userData.skills.join(', ') : ''}
+                                </p>
+                            </div>
+                            <div className="profile-actions">
+                                <button 
+                                    onClick={() => navigate(`/updateUserProfile/${userData.id}`)} 
+                                    className="update-button"
+                                >
+                                    <FaEdit style={{ marginRight: '5px' }} /> Update Profile
+                                </button>
+                                <button onClick={handleDelete} className="delete-button">
+                                    Delete Account
+                                </button>
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+                
                 <div className='my_post_link'>
                     <div className='my_post_link_card' onClick={() => (window.location.href = '/myLearningPlan')}>
                         <div className='my_post_name_img1'></div>
