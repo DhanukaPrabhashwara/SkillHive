@@ -297,183 +297,201 @@ function MyAllPost() {
   };
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className='searchinput'>
-            <input
-              type="text"
-              className="Auth_input "
-              placeholder="Search posts by title, description, or category"
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-          </div>
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addNewPost')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredPosts.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button className='not_found_btn' onClick={() => (window.location.href = '/addNewPost')}>Create New Post</button>
-              </div>
-            ) : (
-              filteredPosts.map((post) => (
-                <div key={post.id} className='post_card'>
-                  <div className='user_details_card'>
-                    <div className='name_section_post'>
-                      <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
-                      {post.userID !== loggedInUserID && (
-                        <button
-                          className={followedUsers.includes(post.userID) ? 'flow_btn_unfalow' : 'flow_btn'}
-                          onClick={() => handleFollowToggle(post.userID)}
-                        >
-                          {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
-                        </button>
-                      )}
-                    </div>
-                    {post.userID === loggedInUserID && (
-                      <div>
-                        <div className='action_btn_icon_post'>
-                          <FaEdit
-                            onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                          <RiDeleteBin6Fill
-                            onClick={() => handleDelete(post.id)}
-                            className='action_btn_icon' />
-                        </div>
-                      </div>
+    <div className="register-container">
+      <div className="register-background">
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+      </div>
+      
+      <div className="register-card">
+        <div className="register-header">
+          <h1>My Posts</h1>
+          <p>View and manage your posts</p>
+        </div>
+
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search posts..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="search-input"
+          />
+        </div>
+
+        <div className="post-grid">
+          {filteredPosts.length === 0 ? (
+            <div className="no-items-message">
+              <h3>No Posts Found</h3>
+              <p>Share your first post with the community</p>
+              <button
+                className="register-button"
+                onClick={() => (window.location.href = '/addNewPost')}
+              >
+                Create Post
+              </button>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
+              <div key={post.id} className="post-card">
+                <div className='user_details_card'>
+                  <div className='name_section_post'>
+                    <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
+                    {post.userID !== loggedInUserID && (
+                      <button
+                        className={followedUsers.includes(post.userID) ? 'flow_btn_unfalow' : 'flow_btn'}
+                        onClick={() => handleFollowToggle(post.userID)}
+                      >
+                        {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
+                      </button>
                     )}
                   </div>
-                  <div className='user_details_card_di'>
-                    <p className='card_post_title'>{post.title}</p>
-                    <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-                    <p className='card_post_category'>Category: {post.category || 'Uncategorized'}</p>
-                  </div>
-                  <div className="media-collage">
-                    {post.media.slice(0, 4).map((mediaUrl, index) => (
-                      <div
-                        key={index}
-                        className={`media-item ${post.media.length > 4 && index === 3 ? 'media-overlay' : ''}`}
-                        onClick={() => openModal(mediaUrl)}
-                      >
-                        {mediaUrl.endsWith('.mp4') ? (
-                          <video controls>
-                            <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        ) : (
-                          <img src={`http://localhost:8080${mediaUrl}`} alt="Post Media" />
-                        )}
-                        {post.media.length > 4 && index === 3 && (
-                          <div className="overlay-text">+{post.media.length - 4}</div>
-                        )}
+                  {post.userID === loggedInUserID && (
+                    <div>
+                      <div className='action_btn_icon_post'>
+                        <FaEdit
+                          onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
+                        <RiDeleteBin6Fill
+                          onClick={() => handleDelete(post.id)}
+                          className='action_btn_icon' />
                       </div>
-                    ))}
+                    </div>
+                  )}
+                </div>
+                <div className='user_details_card_di'>
+                  <p className='card_post_title'>{post.title}</p>
+                  <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
+                  <p className='card_post_category'>Category: {post.category || 'Uncategorized'}</p>
+                </div>
+                <div className="media-collage">
+                  {post.media.slice(0, 4).map((mediaUrl, index) => (
+                    <div
+                      key={index}
+                      className={`media-item ${post.media.length > 4 && index === 3 ? 'media-overlay' : ''}`}
+                      onClick={() => openModal(mediaUrl)}
+                    >
+                      {mediaUrl.endsWith('.mp4') ? (
+                        <video controls>
+                          <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <img src={`http://localhost:8080${mediaUrl}`} alt="Post Media" />
+                      )}
+                      {post.media.length > 4 && index === 3 && (
+                        <div className="overlay-text">+{post.media.length - 4}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className='like_coment_lne'>
+                  <div className='like_btn_con'>
+                    <BiSolidLike
+                      className={post.likes?.[localStorage.getItem('userID')] ? 'unlikebtn' : 'likebtn'}
+                      onClick={() => handleLike(post.id)}
+                    >
+                      {post.likes?.[localStorage.getItem('userID')] ? 'Unlike' : 'Like'}
+                    </BiSolidLike>
+                    <p className='like_num'>
+                      {Object.values(post.likes || {}).filter((liked) => liked).length}
+                    </p>
                   </div>
-                  <div className='like_coment_lne'>
+                  <div className=''>
                     <div className='like_btn_con'>
-                      <BiSolidLike
-                        className={post.likes?.[localStorage.getItem('userID')] ? 'unlikebtn' : 'likebtn'}
-                        onClick={() => handleLike(post.id)}
-                      >
-                        {post.likes?.[localStorage.getItem('userID')] ? 'Unlike' : 'Like'}
-                      </BiSolidLike>
+                      <FaCommentAlt
+                        className='combtn'
+                      />
                       <p className='like_num'>
-                        {Object.values(post.likes || {}).filter((liked) => liked).length}
+                        {post.comments?.length || 0}
                       </p>
                     </div>
-                    <div className=''>
-                      <div className='like_btn_con'>
-                        <FaCommentAlt
-                          className='combtn'
-                        />
-                        <p className='like_num'>
-                          {post.comments?.length || 0}
-                        </p>
-                      </div>
-
-                    </div>
-                  </div>
-                  <div className='withsett'>
-                    <div className='add_comennt_con'>
-                      <input
-                        type="text"
-                        className='add_coment_input'
-                        placeholder="Add a comment"
-                        value={newComment[post.id] || ''}
-                        onChange={(e) =>
-                          setNewComment({ ...newComment, [post.id]: e.target.value })
-                        }
-                      />
-                      <IoSend
-                        onClick={() => handleAddComment(post.id)}
-                        className='add_coment_btn'
-                      />
-                    </div>
-                    <br/>
-                    {post.comments?.map((comment) => (
-                      <div key={comment.id} className='coment_full_card'>
-                        <div className='comnt_card'>
-                          <p className='comnt_card_username'>{comment.userFullName}</p>
-                          {editingComment.id === comment.id ? (
-                            <input
-                              type="text"
-                              className='edit_comment_input'
-                              value={editingComment.content}
-                              onChange={(e) =>
-                                setEditingComment({ ...editingComment, content: e.target.value })
-                              }
-                              autoFocus
-                            />
-                          ) : (
-                            <p className='comnt_card_coment'>{comment.content}</p>
-                          )}
-                        </div>
-
-                        <div className='coment_action_btn'>
-                          {comment.userID === loggedInUserID && (
-                            <>
-                              {editingComment.id === comment.id ? (
-                                <>
-                                  <FiSave className='coment_btn'
-                                    onClick={() =>
-                                      handleSaveComment(post.id, comment.id, editingComment.content)
-                                    } />
-                                  <TbPencilCancel className='coment_btn'
-                                    onClick={() => setEditingComment({})} />
-
-                                </>
-                              ) : (
-                                <>
-                                  <GrUpdate className='coment_btn' onClick={() =>
-                                    setEditingComment({ id: comment.id, content: comment.content })
-                                  } />
-                                  <MdDelete className='coment_btn' onClick={() => handleDeleteComment(post.id, comment.id)} />
-                                </>
-                              )}
-                            </>
-                          )}
-                          {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
-                            <button
-                              className='coment_btn'
-                              onClick={() => handleDeleteComment(post.id, comment.id)}
-                            >
-                              Delete
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
 
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+                <div className='withsett'>
+                  <div className='add_comennt_con'>
+                    <input
+                      type="text"
+                      className='add_coment_input'
+                      placeholder="Add a comment"
+                      value={newComment[post.id] || ''}
+                      onChange={(e) =>
+                        setNewComment({ ...newComment, [post.id]: e.target.value })
+                      }
+                    />
+                    <IoSend
+                      onClick={() => handleAddComment(post.id)}
+                      className='add_coment_btn'
+                    />
+                  </div>
+                  <br/>
+                  {post.comments?.map((comment) => (
+                    <div key={comment.id} className='coment_full_card'>
+                      <div className='comnt_card'>
+                        <p className='comnt_card_username'>{comment.userFullName}</p>
+                        {editingComment.id === comment.id ? (
+                          <input
+                            type="text"
+                            className='edit_comment_input'
+                            value={editingComment.content}
+                            onChange={(e) =>
+                              setEditingComment({ ...editingComment, content: e.target.value })
+                            }
+                            autoFocus
+                          />
+                        ) : (
+                          <p className='comnt_card_coment'>{comment.content}</p>
+                        )}
+                      </div>
+
+                      <div className='coment_action_btn'>
+                        {comment.userID === loggedInUserID && (
+                          <>
+                            {editingComment.id === comment.id ? (
+                              <>
+                                <FiSave className='coment_btn'
+                                  onClick={() =>
+                                    handleSaveComment(post.id, comment.id, editingComment.content)
+                                  } />
+                                <TbPencilCancel className='coment_btn'
+                                  onClick={() => setEditingComment({})} />
+
+                              </>
+                            ) : (
+                              <>
+                                <GrUpdate className='coment_btn' onClick={() =>
+                                  setEditingComment({ id: comment.id, content: comment.content })
+                                } />
+                                <MdDelete className='coment_btn' onClick={() => handleDeleteComment(post.id, comment.id)} />
+                              </>
+                            )}
+                          </>
+                        )}
+                        {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
+                          <button
+                            className='coment_btn'
+                            onClick={() => handleDeleteComment(post.id, comment.id)}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                </div>
+              </div>
+            ))
+          )}
         </div>
+
+        <button
+          className="floating-add-button"
+          onClick={() => (window.location.href = '/addNewPost')}
+        >
+          <IoIosCreate />
+        </button>
       </div>
 
       {/* Modal for displaying full media */}
@@ -494,7 +512,7 @@ function MyAllPost() {
           <img src={`http://localhost:8080${selectedMedia}`} alt="Full Media" className="modal-media" />
         )}
       </Modal>
-    </div >
+    </div>
   );
 }
 

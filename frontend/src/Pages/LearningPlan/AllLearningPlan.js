@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './post.css';
+import './LearningPlan.css';
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoIosCreate } from "react-icons/io";
@@ -62,214 +63,124 @@ function AllLearningPlan() {
     window.location.href = `/updateLearningPlan/${id}`;
   };
 
-  const renderPostByTemplate = (post) => {
-    console.log('Rendering post:', post); // Debugging: Log the post object
-    if (!post.templateID) { // Use the correct field name
-      console.warn('Missing templateID for post:', post); // Warn if templateID is missing
-      return <div className="template template-default">Invalid template ID</div>;
-    }
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchOwnerName(query);
 
-    switch (post.templateID) { // Use the correct field name
-      case 1:
-        return (
-          <div className="template_dis template-1">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-            {post.imageUrl && (
-              <img
-                src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                alt={post.title}
-                className="iframe_preview_dis"
-              />
-            )}
-            {post.contentURL && (
-              <iframe
-                src={getEmbedURL(post.contentURL)}
-                title={post.title}
-                className="iframe_preview_dis"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
-            )}
-          </div>
-        );
-      case 2:
-        return (
-          <div className="template_dis template-2">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-            <div className='preview_part'>
-              <div className='preview_part_sub'>
-                {post.imageUrl && (
-                  <img
-                    src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                    alt={post.title}
-                    className="iframe_preview"
-                  />
-                )}
-              </div>
-              <div className='preview_part_sub'>
-                {post.contentURL && (
-                  <iframe
-                    src={getEmbedURL(post.contentURL)}
-                    title={post.title}
-                    className="iframe_preview"
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      case 3:
-        return (
-          <div className="template_dis template-3">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            {post.imageUrl && (
-              <img
-                src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                alt={post.title}
-                className="iframe_preview_dis"
-              />
-            )}
-            {post.contentURL && (
-              <iframe
-                src={getEmbedURL(post.contentURL)}
-                title={post.title}
-                className="iframe_preview_dis"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
-            )}
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-          </div>
-        );
-      default:
-        console.warn('Unknown templateID:', post.templateID); // Warn if templateID is unexpected
-        return (
-          <div className="template template-default">
-            <p>Unknown template ID: {post.templateID}</p>
-          </div>
-        );
+    const validCategories = ['jewelry making', 'painting', 'woodworking', 'crochet', 'other creative'];
+    
+    if (validCategories.includes(query)) {
+      // Filter exactly matching category
+      setFilteredPosts(
+        posts.filter(post => 
+          post.category && post.category.toLowerCase() === query
+        )
+      );
+    } else if (query.length > 0) {
+      // Search in categories that contain the query
+      setFilteredPosts(
+        posts.filter(post => 
+          post.category && post.category.toLowerCase().includes(query)
+        )
+      );
+    } else {
+      // If no search query, show all posts
+      setFilteredPosts(posts);
     }
   };
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className='searchinput'>
-            <input
-              type="text"
-              placeholder="Search by owner name"
-              value={searchOwnerName}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchOwnerName(value);
-                setFilteredPosts(
-                  posts.filter((post) =>
-                    post.postOwnerName.toLowerCase().includes(value.toLowerCase())
-                  )
-                );
-              }}
-              className="Auth_input"
-            />
-          </div>
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addLearningPlan')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredPosts.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button className='not_found_btn' onClick={() => (window.location.href = '/addLearningPlan')}>Create New Post</button>
-              </div>
-            ) : (
-              filteredPosts.map((post) => (
-                <div key={post.id} className='post_card_new'>
-                  {renderPostByTemplate(post)}
-                </div>
-              ))
-            )}
-          </div>
+    <div className="learning-page">
+      <NavBar />
+      <div className="learning-content">
+        <div className="search-section">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search by category..."
+            value={searchOwnerName}
+            onChange={handleSearch}
+          />
         </div>
+
+        <div className="learning-grid">
+          {filteredPosts.length === 0 ? (
+            <div className="no-learning">
+              <h3>No Learning Plans Found</h3>
+              <p>Start by creating your first learning plan</p>
+              <button 
+                className="create-button"
+                onClick={() => (window.location.href = '/addLearningPlan')}
+              >
+                Create Learning Plan
+              </button>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
+              <div key={post.id} className="learning-card">
+                <div className="learning-header">
+                  <span className="owner-name">{post.postOwnerName}</span>
+                  {post.postOwnerID === localStorage.getItem('userID') && (
+                    <div className="action-buttons">
+                      <FaEdit
+                        onClick={() => handleUpdate(post.id)}
+                        className="action-icon"
+                      />
+                      <RiDeleteBin6Fill
+                        onClick={() => handleDelete(post.id)}
+                        className="action-icon"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="learning-title">{post.title}</h3>
+                <p className="learning-description">{post.description}</p>
+
+                <div className="learning-tags">
+                  {post.tags?.map((tag, index) => (
+                    <span key={index} className="tag">#{tag}</span>
+                  ))}
+                </div>
+
+                {post.imageUrl && (
+                  <div className="learning-media">
+                    <img
+                      src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
+                      alt={post.title}
+                    />
+                  </div>
+                )}
+
+                {post.contentURL && (
+                  <div className="learning-media">
+                    <iframe
+                      src={getEmbedURL(post.contentURL)}
+                      title={post.title}
+                      frameBorder="0"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
+
+                <div className="learning-meta">
+                  <span className="learning-date">
+                    <HiCalendarDateRange />
+                    {post.startDate} to {post.endDate}
+                  </span>
+                  <span className="learning-category">{post.category}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <button
+          className="add-learning-btn"
+          onClick={() => (window.location.href = '/addLearningPlan')}
+        >
+          <IoIosCreate />
+        </button>
       </div>
     </div>
   );
