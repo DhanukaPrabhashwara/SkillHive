@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
+import './AddPost.css';
+
 function AddNewPost() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [media, setMedia] = useState([]);
-  const [mediaPreviews, setMediaPreviews] = useState([]); // For storing media preview objects
-  const [categories, setCategories] = useState(''); // New state for categories
+  const [mediaPreviews, setMediaPreviews] = useState([]);
+  const [categories, setCategories] = useState('');
   const userID = localStorage.getItem('userID');
 
   const handleMediaChange = (e) => {
     const files = Array.from(e.target.files);
-    const maxFileSize = 50 * 1024 * 1024; // 50MB
+    const maxFileSize = 50 * 1024 * 1024;
 
     let imageCount = 0;
     let videoCount = 0;
@@ -28,7 +30,6 @@ function AddNewPost() {
       } else if (file.type === 'video/mp4') {
         videoCount++;
 
-        // Validate video duration
         const video = document.createElement('video');
         video.preload = 'metadata';
         video.src = URL.createObjectURL(file);
@@ -45,7 +46,6 @@ function AddNewPost() {
         window.location.reload();
       }
 
-      // Add file preview object with type and URL
       previews.push({ type: file.type, url: URL.createObjectURL(file) });
     }
 
@@ -60,7 +60,7 @@ function AddNewPost() {
     }
 
     setMedia(files);
-    setMediaPreviews(previews); // Set preview objects
+    setMediaPreviews(previews);
   };
 
   const handleSubmit = async (e) => {
@@ -69,7 +69,7 @@ function AddNewPost() {
     formData.append('userID', userID);
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('category', categories); // Include category in form data
+    formData.append('category', categories);
     media.forEach((file, index) => formData.append(`mediaFiles`, file));
 
     try {
@@ -86,77 +86,89 @@ function AddNewPost() {
   };
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-          <div className="from_continer">
-            <p className="Auth_heading">Create New Post</p>
-            <form onSubmit={handleSubmit} className='from_data'>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Title</label>
+    <div className="add-post-page">
+      <NavBar />
+      <div className="add-post-container">
+        <div className="add-post-card">
+          <div className="add-post-header">
+            <h1>Create New Post</h1>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Title</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Enter post title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                className="form-input"
+                placeholder="Enter post description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={5}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Category</label>
+              <select
+                className="form-input category-select"
+                value={categories}
+                onChange={(e) => setCategories(e.target.value)}
+                required
+              >
+                <option value="" disabled>Select Category</option>
+                <option value="Coding">Coding</option>
+                <option value="Photography">Photography</option>
+                <option value="DIY cards">DIY cards</option>
+                <option value="Public Speaking Skills">Public Speaking Skills</option>
+                <option value="Finance for Beginners">Finance for Beginners</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Media Files</label>
+              <div className="file-input-container">
+                <label className="file-input-label">Add photos or videos</label>
                 <input
-                  className="Auth_input"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Description</label>
-                <textarea
-                  className="Auth_input"
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={3}
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Category</label>
-                <select
-                  className="Auth_input"
-                  value={categories}
-                  onChange={(e) => setCategories(e.target.value)}
-                  required
-                >
-                  <option value="" disabled>Select Category</option>
-                  <option value="Tech">Tech</option>
-                  <option value="Programming">Programming</option>
-                  <option value="Cooking">Cooking</option>
-                  <option value="Photography">Photography</option>
-                </select>
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Media</label>
-                <div className='seket_media'>
-                  {mediaPreviews.map((preview, index) => (
-                    <div key={index}>
-                      {preview.type.startsWith('video/') ? (
-                        <video controls className='media_file_se'>
-                          <source src={preview.url} type={preview.type} />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <img className='media_file_se' src={preview.url} alt={`Media Preview ${index}`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <input
-                  className="Auth_input"
                   type="file"
+                  className="custom-file-input"
                   accept="image/jpeg,image/png,image/jpg,video/mp4"
                   multiple
                   onChange={handleMediaChange}
                 />
               </div>
-              <button type="submit" className="Auth_button">Submit</button>
-            </form>
-          </div>
+              
+              <div className="media-preview">
+                {mediaPreviews.map((preview, index) => (
+                  <div key={index} className="media-item">
+                    {preview.type.startsWith('video/') ? (
+                      <video controls>
+                        <source src={preview.url} type={preview.type} />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <img src={preview.url} alt={`Preview ${index}`} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="submit-button">
+              Create Post
+            </button>
+          </form>
         </div>
       </div>
     </div>

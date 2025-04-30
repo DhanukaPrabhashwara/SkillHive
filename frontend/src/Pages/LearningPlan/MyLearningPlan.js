@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../../Components/NavBar/post.css';
+import './post.css';
+import './MyLearningPlan.css';
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoIosCreate } from "react-icons/io";
@@ -63,198 +64,95 @@ function MyLearningPlan() {
     window.location.href = `/updateLearningPlan/${id}`;
   };
 
-  const renderPostByTemplate = (post) => {
-    console.log('Rendering post:', post); // Debugging: Log the post object
-    if (!post.templateID) { // Use the correct field name
-      console.warn('Missing templateID for post:', post); // Warn if templateID is missing
-      return <div className="template template-default">Invalid template ID</div>;
-    }
-
-    switch (post.templateID) { // Use the correct field name
-      case 1:
-        return (
-          <div className="template_dis template-1">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-            {post.imageUrl && (
-              <img
-                src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                alt={post.title}
-                className="iframe_preview_dis"
-              />
-            )}
-            {post.contentURL && (
-              <iframe
-                src={getEmbedURL(post.contentURL)}
-                title={post.title}
-                className="iframe_preview_dis"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
-            )}
-          </div>
-        );
-      case 2:
-        return (
-          <div className="template_dis template-2">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-            <div className='preview_part'>
-              <div className='preview_part_sub'>
-                {post.imageUrl && (
-                  <img
-                    src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                    alt={post.title}
-                    className="iframe_preview"
-                  />
-                )}
-              </div>
-              <div className='preview_part_sub'>
-                {post.contentURL && (
-                  <iframe
-                    src={getEmbedURL(post.contentURL)}
-                    title={post.title}
-                    className="iframe_preview"
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      case 3:
-        return (
-          <div className="template_dis template-3">
-            <div className='user_details_card'>
-              <div>
-                <div className='name_section_post'>
-                  <p className='name_section_post_owner_name'>{post.postOwnerName}</p>
-                </div>
-                
-              </div>
-              {post.postOwnerID === localStorage.getItem('userID') && (
-                <div className='action_btn_icon_post'>
-                  <FaEdit
-                    onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                  <RiDeleteBin6Fill
-                    onClick={() => handleDelete(post.id)}
-                    className='action_btn_icon' />
-                </div>
-              )}
-            </div>
-            {post.imageUrl && (
-              <img
-                src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
-                alt={post.title}
-                className="iframe_preview_dis"
-              />
-            )}
-            {post.contentURL && (
-              <iframe
-                src={getEmbedURL(post.contentURL)}
-                title={post.title}
-                className="iframe_preview_dis"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
-            )}
-            <p className='template_title'>{post.title}</p>
-            <p className='template_dates'><HiCalendarDateRange /> {post.startDate} to {post.endDate} </p>
-            <p className='template_description'>{post.category}</p>
-            <hr></hr>
-            <p className='template_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-            <div className="tags_preview">
-              {post.tags?.map((tag, index) => (
-                <span key={index} className="tagname">#{tag}</span>
-              ))}
-            </div>
-          </div>
-        );
-      default:
-        console.warn('Unknown templateID:', post.templateID); // Warn if templateID is unexpected
-        return (
-          <div className="template template-default">
-            <p>Unknown template ID: {post.templateID}</p>
-          </div>
-        );
-    }
-  };
-
   return (
-    <div>
-      <div className='continer'>
-        <NavBar />
-        <div className='continSection'>
-
-          <div className='add_new_btn' onClick={() => (window.location.href = '/addLearningPlan')}>
-            <IoIosCreate className='add_new_btn_icon' />
-          </div>
-          <div className='post_card_continer'>
-            {filteredPosts.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No posts found. Please create a new post.</p>
-                <button className='not_found_btn' onClick={() => (window.location.href = '/addLearningPlan')}>Create New Post</button>
-              </div>
-            ) : (
-              filteredPosts.map((post) => (
-                <div key={post.id} className='post_card_new'>
-                  {renderPostByTemplate(post)}
-                </div>
-              ))
-            )}
-          </div>
+    <div className="register-container">
+      <div className="register-background">
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+      </div>
+      
+      <div className="register-card">
+        <div className="register-header">
+          <h1>My Learning Plans</h1>
+          <p>View and manage your learning plans</p>
         </div>
+
+        <div className="post-grid">
+          {filteredPosts.length === 0 ? (
+            <div className="no-items-message">
+              <h3>No Learning Plans Found</h3>
+              <p>Start by creating your first learning plan</p>
+              <button
+                className="register-button"
+                onClick={() => (window.location.href = '/addLearningPlan')}
+              >
+                Create Learning Plan
+              </button>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
+              <div key={post.id} className="post-card">
+                <div className="user-header">
+                  <div className="owner-info">
+                    <span className="owner-name">{post.postOwnerName}</span>
+                  </div>
+                  {post.postOwnerID === userId && (
+                    <div className="action-buttons">
+                      <FaEdit
+                        onClick={() => handleUpdate(post.id)}
+                        className="action-icon"
+                      />
+                      <RiDeleteBin6Fill
+                        onClick={() => handleDelete(post.id)}
+                        className="action-icon"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="learning-title">{post.title}</h3>
+                <div className="learning-date">
+                  <HiCalendarDateRange />
+                  {post.startDate} to {post.endDate}
+                </div>
+                <span className="category-badge">{post.category}</span>
+                
+                <p className="learning-description">{post.description}</p>
+                
+                <div className="tags-container">
+                  {post.tags?.map((tag, index) => (
+                    <span key={index} className="tag">#{tag}</span>
+                  ))}
+                </div>
+
+                <div className="media-section">
+                  {post.imageUrl && (
+                    <img
+                      src={`http://localhost:8080/learningPlan/planImages/${post.imageUrl}`}
+                      alt={post.title}
+                    />
+                  )}
+                  {post.contentURL && (
+                    <iframe
+                      src={getEmbedURL(post.contentURL)}
+                      title={post.title}
+                      frameBorder="0"
+                      allowFullScreen
+                    />
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <button
+          className="floating-add-button"
+          onClick={() => (window.location.href = '/addLearningPlan')}
+        >
+          <IoIosCreate />
+        </button>
       </div>
     </div>
   );
