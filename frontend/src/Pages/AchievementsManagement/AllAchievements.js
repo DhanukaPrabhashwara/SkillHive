@@ -146,19 +146,19 @@ function AllAchievements() {
                     <span className="achievement-date">{achievement.date}</span>
                   </div>
                   <div className="achievement-badges">
-                    {achievement.badges.map((badge) => (
+                    {achievement.badges && achievement.badges.map((badge) => (
                       <span key={badge} className="badge">{badge}</span>
                     ))}
                   </div>
                   <div className="achievement-interactions">
                     <button
-                      className={`interaction-btn ${achievement.likes.includes(userId) ? 'liked' : ''}`}
+                      className={`interaction-btn ${achievement.likes && achievement.likes.includes(userId) ? 'liked' : ''}`}
                       onClick={() => handleLike(achievement.id)}
                     >
-                      <FaHeart /> {achievement.likes.length}
+                      <FaHeart /> {achievement.likes ? achievement.likes.length : 0}
                     </button>
                     <button className="interaction-btn" onClick={() => handleComment(achievement.id)}>
-                      <FaComment /> {achievement.comments.length}
+                      <FaComment /> {achievement.comments ? achievement.comments.length : 0}
                     </button>
                     <button className="interaction-btn" onClick={() => handleShare(achievement)}>
                       <FaShare /> Share
@@ -181,7 +181,7 @@ function AllAchievements() {
                     >
                       Post
                     </button>
-                    {achievement.comments.map((comment, index) => (
+                    {achievement.comments && achievement.comments.map((comment, index) => (
                       <div key={index} className="comment">
                         <span className="comment-user">{comment.userId}</span>: {comment.comment}
                       </div>
