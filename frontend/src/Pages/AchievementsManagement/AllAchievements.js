@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
-import { FaEdit, FaHeart, FaComment, FaShare } from 'react-icons/fa';
-import { RiDeleteBin6Fill } from 'react-icons/ri';
 import NavBar from '../../Components/NavBar/NavBar';
-import { IoIosCreate } from 'react-icons/io';
 import { IoIosCreate } from 'react-icons/io';
 import './Achievements.css';
 
@@ -12,7 +9,6 @@ function AllAchievements() {
   const [progressData, setProgressData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [commentInput, setCommentInput] = useState({});
   const [commentInput, setCommentInput] = useState({});
   const userId = localStorage.getItem('userID');
 
@@ -88,59 +84,7 @@ function AllAchievements() {
     }
   };
 
-  const handleLike = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8080/achievements/${id}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
-      if (response.ok) {
-        const updatedAchievement = await response.json();
-        setFilteredData((prev) =>
-          prev.map((item) => (item.id === id ? updatedAchievement : item))
-        );
-      }
-    } catch (error) {
-      console.error('Error liking achievement:', error);
-    }
-  };
-
-  const handleComment = async (id) => {
-    if (!commentInput[id]) return;
-    try {
-      const response = await fetch(`http://localhost:8080/achievements/${id}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, comment: commentInput[id] }),
-      });
-      if (response.ok) {
-        const updatedAchievement = await response.json();
-        setFilteredData((prev) =>
-          prev.map((item) => (item.id === id ? updatedAchievement : item))
-        );
-        setCommentInput((prev) => ({ ...prev, [id]: '' }));
-      }
-    } catch (error) {
-      console.error('Error commenting on achievement:', error);
-    }
-  };
-
-  const handleShare = (achievement) => {
-    const shareData = {
-      title: achievement.title,
-      text: achievement.description,
-      url: window.location.href,
-    };
-    if (navigator.share) {
-      navigator.share(shareData).catch((error) => console.error('Error sharing:', error));
-    } else {
-      alert('Share feature not supported in this browser.');
-    }
-  };
-
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Achievement?')) {
     if (window.confirm('Are you sure you want to delete this Achievement?')) {
       try {
         const response = await fetch(`http://localhost:8080/achievements/${id}`, {
@@ -148,14 +92,11 @@ function AllAchievements() {
         });
         if (response.ok) {
           alert('Achievement deleted successfully!');
-          alert('Achievement deleted successfully!');
           setFilteredData(filteredData.filter((progress) => progress.id !== id));
         } else {
           alert('Failed to delete Achievement.');
-          alert('Failed to delete Achievement.');
         }
       } catch (error) {
-        console.error('Error deleting Achievement:', error);
         console.error('Error deleting Achievement:', error);
       }
     }
