@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from '../../Components/NavBar/NavBar';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './achieve.css';
+import './AddAchievements.css';
 
 function AddAchievements() {
   const [formData, setFormData] = useState({
@@ -15,9 +13,12 @@ function AddAchievements() {
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [isDragging, setIsDragging] = useState(false);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    setImagePreview(file ? URL.createObjectURL(file) : null);
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem('userID');
@@ -34,182 +35,124 @@ function AddAchievements() {
     }
   }, []);
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.date) newErrors.date = 'Date is required';
-    if (!formData.category) newErrors.category = 'Category is required';
-    if (!image) newErrors.image = 'Image is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-      setErrors((prev) => ({ ...prev, image: '' }));
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-      setErrors((prev) => ({ ...prev, image: '' }));
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-    try {
-      let imageUrl = '';
-      if (image) {
-        const imageFormData = new FormData();
-        imageFormData.append('file', image);
-        const uploadResponse = await fetch('http://localhost:8080/achievements/upload', {
-          method: 'POST',
-          body: imageFormData,
-        });
-        imageUrl = await uploadResponse.text();
-      }
-
-      const response = await fetch('http://localhost:8080/achievements', {
+    let imageUrl = '';
+    if (image) {
+      const formData = new FormData();
+      formData.append('file', image);
+      const uploadResponse = await fetch('http://localhost:8080/achievements/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, imageUrl }),
+        body: formData,
       });
+      imageUrl = await uploadResponse.text();
+    }
 
-      if (response.ok) {
-        toast.success('Achievement added successfully!');
-        window.location.href = '/myAchievements';
-        setFormData({
-          title: '',
-          description: '',
-          date: '',
-          category: '',
-          postOwnerID: formData.postOwnerID,
-          postOwnerName: formData.postOwnerName,
-        });
-        setImage(null);
-        setImagePreview(null);
-      } else {
-        throw new Error('Failed to add achievement');
-      }
-    } catch (error) {
-      toast.error('Failed to add achievement. Please try again.');
-    } finally {
-      setIsLoading(false);
+    const response = await fetch('http://localhost:8080/achievements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...formData, imageUrl }),
+    });
+    if (response.ok) {
+      alert('Achievement added successfully!');
+      window.location.href = '/myAchievements';
+    } else {
+      alert('Failed to add Achievement.');
     }
   };
 
   return (
-    <div className="continer">
+    <div className="add-achievement-page">
       <NavBar />
-      <div className="continSection">
-        <div className="from_continer">
-          <p className="Auth_heading">Add Achievement</p>
-          <form
-            onSubmit={handleSubmit}
-            className="from_data"
-          >
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Upload Image</label>
-              <div
-                className={`image-upload-container ${isDragging ? 'drag-active' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="image-preview-achi" />
-                ) : (
-                  <p>Drag & Drop or Click to Upload (PNG, JPG)</p>
-                )}
+      <div className="achievement-container">
+        <div className="achievement-card">
+          <div className="achievement-header">
+            <h1>Share Your Achievement</h1>
+            <p>Celebrate your success with the community!</p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Upload Image</label>
+              {imagePreview && (
+                <div className="image-preview">
+                  <img src={imagePreview} alt="Preview" />
+                </div>
+              )}
+              <div className="file-input-container">
                 <input
                   type="file"
+                  className="custom-file-input"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="Auth_input"
-                  style={{ display: imagePreview ? 'none' : 'block' }}
+                  required
                 />
-                {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
               </div>
             </div>
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Title</label>
+
+            <div className="form-group">
+              <label>Title</label>
               <input
+                type="text"
                 name="title"
-                placeholder="Title"
+                className="form-input"
+                placeholder="Enter achievement title"
                 value={formData.title}
                 onChange={handleChange}
-                className="Auth_input"
+                required
               />
-              {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
             </div>
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Description</label>
+
+            <div className="form-group">
+              <label>Description</label>
               <textarea
                 name="description"
-                placeholder="Description"
+                className="form-input"
+                placeholder="Describe your achievement"
                 value={formData.description}
                 onChange={handleChange}
-                className="Auth_input"
+                required
+                rows="5"
               />
-              {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
             </div>
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Category</label>
+
+            <div className="form-group">
+              <label>Category</label>
               <select
+                className="form-input"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="Auth_input"
+                required
               >
                 <option value="" disabled>Select Category</option>
-                <option value="Tech">Tech</option>
-                <option value="Programming">Programming</option>
-                <option value="Cooking">Cooking</option>
+                <option value="Coding">Coding</option>
                 <option value="Photography">Photography</option>
+                <option value="DIY cards">DIY cards</option>
+                <option value="Public Speaking Skills">Public Speaking Skills</option>
+                <option value="Finance for Beginners">Finance for Beginners</option>
               </select>
-              {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
             </div>
-            <div className="Auth_formGroup">
-              <label className="Auth_label">Date</label>
+
+            <div className="form-group">
+              <label>Date</label>
               <input
-                name="date"
                 type="date"
+                name="date"
+                className="form-input"
                 value={formData.date}
                 onChange={handleChange}
-                className="Auth_input"
+                required
               />
-              {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
             </div>
-            <button type="submit" className="Auth_button" disabled={isLoading}>
-              {isLoading ? <span className="spinner"></span> : 'Add Achievement'}
+
+            <button type="submit" className="submit-button">
+              Share Achievement
             </button>
           </form>
         </div>

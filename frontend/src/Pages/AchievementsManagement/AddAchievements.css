@@ -1,0 +1,142 @@
+.add-achievement-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63);
+  padding: 80px 20px 20px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+.achievement-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.achievement-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.achievement-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.achievement-header h1 {
+  font-size: 36px;
+  background: linear-gradient(45deg, #fff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.achievement-header p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.form-input,
+select.form-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #fff;
+  padding: 12px 20px;
+  width: 100%;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+select.form-input option {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 10px;
+}
+
+select.form-input:focus,
+.form-input:focus {
+  border-color: #6b46c1;
+  box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+textarea.form-input {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-input-container {
+  position: relative;
+  margin-top: 15px;
+}
+
+.custom-file-input {
+  width: 100%;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.custom-file-input:hover {
+  border-color: #6b46c1;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(45deg, #6b46c1, #805ad5);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(107, 70, 193, 0.3);
+}
+
+.submit-button:disabled {
+  background: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}

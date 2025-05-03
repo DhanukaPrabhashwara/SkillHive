@@ -6,6 +6,7 @@ import { IoLogOut } from "react-icons/io5";
 import axios from 'axios';
 import './NavBar.css';
 import Pro from './img/img.png';
+import logocover from './img/logocover.png';
 import { fetchUserDetails } from '../../Pages/UserManagement/UserProfile';
 
 function NavBar() {
@@ -67,7 +68,12 @@ function NavBar() {
         <div className={`navbar ${isVisible ? 'navbar_visible' : 'navbar_hidden'}`}>
             <div className="nav_con">
                 <div className='nav_item_set'>
-                    <div className='side_logoo'></div>
+                    <img 
+                        src={logocover} 
+                        alt="SkillHive Logo" 
+                        className='side_logoo'
+                        onClick={() => window.location.href = '/allPost'}
+                    />
                     <div className='nav_bar_item'>
 
                         <p
