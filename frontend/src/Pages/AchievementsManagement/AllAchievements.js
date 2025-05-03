@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { RiDeleteBin6Fill } from 'react-icons/ri';
-import { IoIosCreate } from 'react-icons/io';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit } from "react-icons/fa";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 import NavBar from '../../Components/NavBar/NavBar';
-import { toast } from 'react-toastify';
-import './achieve.css';
+import { IoIosCreate } from "react-icons/io";
+import './Achievements.css';
 
 function AllAchievements() {
   const [progressData, setProgressData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
@@ -20,140 +17,107 @@ function AllAchievements() {
       .then((data) => {
         setProgressData(data);
         setFilteredData(data);
-        setIsLoading(false);
       })
-      .catch((error) => {
-        console.error('Error fetching Achievements data:', error);
-        toast.error('Failed to load achievements.');
-        setIsLoading(false);
-      });
+      .catch((error) => console.error('Error fetching Achievements data:', error));
   }, []);
 
-  useEffect(() => {
-    let filtered = progressData;
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (achievement) =>
-          achievement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          achievement.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    if (categoryFilter) {
-      filtered = filtered.filter((achievement) => achievement.category === categoryFilter);
-    }
-    setFilteredData(filtered);
-  }, [searchQuery, categoryFilter, progressData]);
-
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
 
-  const handleCategoryFilter = (e) => {
-    setCategoryFilter(e.target.value);
+    const filtered = progressData.filter(
+      (achievement) =>
+        achievement.title.toLowerCase().includes(query) ||
+        achievement.description.toLowerCase().includes(query)
+    );
+    setFilteredData(filtered);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this achievement?')) {
+    if (window.confirm('Are you sure you want to delete this Achievements?')) {
       try {
         const response = await fetch(`http://localhost:8080/achievements/${id}`, {
           method: 'DELETE',
         });
         if (response.ok) {
-          toast.success('Achievement deleted successfully!');
+          alert('Achievements deleted successfully!');
           setFilteredData(filteredData.filter((progress) => progress.id !== id));
         } else {
-          toast.error('Failed to delete achievement.');
+          alert('Failed to delete Achievements.');
         }
       } catch (error) {
-        console.error('Error deleting Achievement:', error);
-        toast.error('Error deleting achievement.');
+        console.error('Error deleting Achievements:', error);
       }
     }
   };
 
   return (
-    <div className="continer">
+    <div className="achievements-page">
       <NavBar />
-      <div className="continSection">
-        <div className="search-filter-container">
-          <div className="searchinput">
-            <input
-              type="text"
-              placeholder="Search by title or description"
-              value={searchQuery}
-              onChange={handleSearch}
-              className="Auth_input"
-            />
-          </div>
-          <div className="category-filter">
-            <select value={categoryFilter} onChange={handleCategoryFilter} className="Auth_input">
-              <option value="">All Categories</option>
-              <option value="Tech">Tech</option>
-              <option value="Programming">Programming</option>
-              <option value="Cooking">Cooking</option>
-              <option value="Photography">Photography</option>
-            </select>
-          </div>
+      <div className="achievements-content">
+        <div className="search-section">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search achievements..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
         </div>
-        {isLoading ? (
-          <div className="spinner"></div>
-        ) : filteredData.length === 0 ? (
-          <div className="not_found_box">
-            <div className="not_found_img"></div>
-            <p className="not_found_msg">No achievements found. Please create a new achievement.</p>
-            <button
-              className="not_found_btn"
-              onClick={() => (window.location.href = '/addAchievements')}
-            >
-              Create New Achievement
-            </button>
-          </div>
-        ) : (
-          <div className="post_card_continer">
-            {filteredData.map((progress) => (
-              <div key={progress.id} className="post_card">
-                <div className="user_details_card">
-                  <div className="name_section_post_achi">
-                    <p className="name_section_post_owner_name">{progress.postOwnerName}</p>
-                    <p className="date_card_dte">{progress.date}</p>
+
+        <div className="achievements-grid">
+          {filteredData.length === 0 ? (
+            <div className="no-achievements">
+              <h3>No Achievements Found</h3>
+              <p>Share your accomplishments with the community</p>
+              <button
+                className="create-button"
+                onClick={() => (window.location.href = '/addAchievements')}
+              >
+                Create Achievement
+              </button>
+            </div>
+          ) : (
+            filteredData.map((achievement) => (
+              <div key={achievement.id} className="achievement-card">
+                {achievement.imageUrl && (
+                  <img
+                    src={`http://localhost:8080/achievements/images/${achievement.imageUrl}`}
+                    alt="Achievement"
+                    className="achievement-image"
+                  />
+                )}
+                <div className="achievement-content">
+                  <h3 className="achievement-title">{achievement.title}</h3>
+                  <p className="achievement-description">{achievement.description}</p>
+                  <div className="achievement-meta">
+                    <span className="achievement-owner">{achievement.postOwnerName}</span>
+                    <span className="achievement-date">{achievement.date}</span>
                   </div>
-                  {progress.postOwnerID === userId && (
-                    <div className="action_btn_icon_post">
+                  {achievement.postOwnerID === userId && (
+                    <div className="achievement-actions">
                       <FaEdit
-                        onClick={() => (window.location.href = `/updateAchievements/${progress.id}`)}
-                        className="action_btn_icon"
+                        onClick={() => (window.location.href = `/updateAchievements/${achievement.id}`)}
+                        className="action-icon edit"
                       />
                       <RiDeleteBin6Fill
-                        onClick={() => handleDelete(progress.id)}
-                        className="action_btn_icon"
+                        onClick={() => handleDelete(achievement.id)}
+                        className="action-icon delete"
                       />
                     </div>
                   )}
                 </div>
-                <div className="dis_con">
-                  <p className="topic_cont">{progress.title}</p>
-                  <p className="dis_con_pera" style={{ whiteSpace: 'pre-line' }}>
-                    {progress.description}
-                  </p>
-                  {progress.imageUrl && (
-                    <img
-                      src={`http://localhost:8080/achievements/images/${progress.imageUrl}`}
-                      alt="Achievement"
-                      className="achievement_image"
-                    />
-                  )}
-                  <p className="text-sm text-purple-600 mt-2">{progress.category}</p>
-                </div>
               </div>
-            ))}
-          </div>
-        )}
-        <div
-          className="add_new_btn"
+            ))
+          )}
+        </div>
+
+        <button
+          className="add-achievement-btn"
           onClick={() => (window.location.href = '/addAchievements')}
         >
-          <IoIosCreate className="add_new_btn_icon" />
-        </div>
+          <IoIosCreate />
+        </button>
       </div>
     </div>
   );

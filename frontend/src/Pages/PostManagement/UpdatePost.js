@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
+import { FaEdit } from "react-icons/fa";
+import { RiDeleteBin6Fill } from "react-icons/ri";
+
 function UpdatePost() {
   const { id } = useParams(); // Get the post ID from the URL
   const navigate = useNavigate();
@@ -48,6 +51,19 @@ function UpdatePost() {
     } catch (error) {
       console.error('Error deleting media file:', error);
       alert('Failed to delete media file.');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      try {
+        await axios.delete(`http://localhost:8080/posts/${id}`);
+        alert('Post deleted successfully!');
+        navigate('/allPost');
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Failed to delete post.');
+      }
     }
   };
 
@@ -139,85 +155,104 @@ function UpdatePost() {
   }
 
   return (
-    <div>
-      <div className='continer'>
-        <NavBar/>
-        <div className='continSection'>
-          <div className="from_continer">
-            <p className="Auth_heading">Update Post</p>
-            <form onSubmit={handleSubmit} className='from_data'>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Description</label>
-                <textarea
-                  className="Auth_input"
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={3}
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Category</label>
-                <select
-                  className="Auth_input"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  required
-                >
-                  <option value="" disabled>Select Category</option>
-                  <option value="Tech">Tech</option>
-                  <option value="Programming">Programming</option>
-                  <option value="Cooking">Cooking</option>
-                  <option value="Photography">Photography</option>
-                </select>
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Media</label>
-                <div className='seket_media'>
-                  {existingMedia.map((mediaUrl, index) => (
-                    <div key={index}>
-                      {mediaUrl.endsWith('.mp4') ? (
-                        <video controls className='media_file_se'>
-                          <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <img className='media_file_se' src={`http://localhost:8080${mediaUrl}`} alt={`Media ${index}`} />
-                      )}
-                      <button
-                      className='rem_btn'
-                        onClick={() => handleDeleteMedia(mediaUrl)}
-
-                      >
-                        X
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <input
-                  className="Auth_input"
-                  type="file"
-                  accept="image/jpeg,image/png,image/jpg,video/mp4"
-                  multiple
-                  onChange={handleNewMediaChange}
-                />
-              </div>
-              <button type="submit" className="Auth_button">Submit</button>
-            </form>
+    <div className="register-container">
+      <div className="register-background">
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+        <div className="animated-shape"></div>
+      </div>
+      
+      <div className="register-card">
+        <div className="register-header">
+          <h1>Update Post</h1>
+          <div className="header-actions">
+            <FaEdit className="header-icon" />
+            <RiDeleteBin6Fill 
+              className="header-icon delete" 
+              onClick={handleDelete}
+            />
           </div>
         </div>
+
+        <form onSubmit={handleSubmit} className="register-form-new">
+          <div className="form-columns">
+            <div className="input-group">
+              <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
+            <div className="input-group">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="" disabled>Select Category</option>
+                <option value="Coding">Coding</option>
+                <option value="Photography">Photography</option>
+                <option value="DIY cards">DIY cards</option>
+                <option value="Public Speaking Skills">Public Speaking Skills</option>
+                <option value="Finance for Beginners">Finance for Beginners</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="input-group">
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              rows={4}
+            />
+          </div>
+
+          <div className="skills-container">
+            <label>Current Media</label>
+            <div className="media-preview-grid">
+              {existingMedia.map((mediaUrl, index) => (
+                <div key={index} className="media-item">
+                  {mediaUrl.endsWith('.mp4') ? (
+                    <video controls>
+                      <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <img src={`http://localhost:8080${mediaUrl}`} alt={`Media ${index}`} />
+                  )}
+                  <button
+                    className="remove-media"
+                    onClick={() => handleDeleteMedia(mediaUrl)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="file-upload">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/jpg,video/mp4"
+                multiple
+                onChange={handleNewMediaChange}
+              />
+            </div>
+          </div>
+
+          <div className="form-actions">
+            <button 
+              type="submit" 
+              className="register-button"
+              disabled={loading}
+            >
+              {loading ? 'Updating...' : 'Update Post'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
