@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../../Components/NavBar/NavBar';
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
+import { FaEdit, FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
+import './Achievements.css';
 
 function UpdateAchievements() {
   const { id } = useParams();
@@ -14,11 +15,16 @@ function UpdateAchievements() {
     category: '',
     postOwnerID: '',
     postOwnerName: '',
-    imageUrl: ''
+    imageUrl: '',
+    likes: [],
+    comments: [],
+    badges: [],
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [commentInput, setCommentInput] = useState('');
+  const userId = localStorage.getItem('userID');
 
   useEffect(() => {
     const fetchAchievement = async () => {
@@ -42,7 +48,7 @@ function UpdateAchievements() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
@@ -53,30 +59,72 @@ function UpdateAchievements() {
     }
   };
 
+  const handleLike = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/achievements/${id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      if (response.ok) {
+        const updatedAchievement = await response.json();
+        setFormData(updatedAchievement);
+      }
+    } catch (error) {
+      console.error('Error liking achievement:', error);
+    }
+  };
+
+  const handleComment = async () => {
+    if (!commentInput) return;
+    try {
+      const response = await fetch(`http://localhost:8080/achievements/${id}/comment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, comment: commentInput }),
+      });
+      if (response.ok) {
+        const updatedAchievement = await response.json();
+        setFormData(updatedAchievement);
+        setCommentInput('');
+      }
+    } catch (error) {
+      console.error('Error commenting on achievement:', error);
+    }
+  };
+
+  const handleShare = () => {
+    const shareData = {
+      title: formData.title,
+      text: formData.description,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch((error) => console.error('Error sharing:', error));
+    } else {
+      alert('Share feature not supported in this browser.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       let imageUrl = formData.imageUrl;
-      
-      // Upload new image if selected
       if (selectedFile) {
         const uploadFormData = new FormData();
         uploadFormData.append('file', selectedFile);
-        
         const uploadResponse = await fetch('http://localhost:8080/achievements/upload', {
           method: 'POST',
           body: uploadFormData,
         });
-        
         if (!uploadResponse.ok) {
           throw new Error('Image upload failed');
         }
         imageUrl = await uploadResponse.text();
       }
 
-      // Update achievement data
       const updatedData = { ...formData, imageUrl };
       const response = await fetch(`http://localhost:8080/achievements/${id}`, {
         method: 'PUT',
@@ -86,7 +134,7 @@ function UpdateAchievements() {
 
       if (response.ok) {
         alert('Achievement updated successfully!');
-        window.location.href = '/allAchievements';
+        navigate('/allAchievements');
       } else {
         throw new Error('Failed to update achievement');
       }
@@ -102,7 +150,7 @@ function UpdateAchievements() {
     if (window.confirm('Are you sure you want to delete this achievement?')) {
       try {
         const response = await fetch(`http://localhost:8080/achievements/${id}`, {
-          method: 'DELETE'
+          method: 'DELETE',
         });
         if (response.ok) {
           alert('Achievement deleted successfully!');
@@ -118,60 +166,67 @@ function UpdateAchievements() {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-background">
-        <div className="animated-shape"></div>
-        <div className="animated-shape"></div>
-        <div className="animated-shape"></div>
-      </div>
-      
-      <div className="register-card">
-        <div className="register-header">
-          <h1>Update Achievement</h1>
-          <div className="header-actions">
-            <FaEdit className="header-icon" />
-            <RiDeleteBin6Fill 
-              className="header-icon delete" 
-              onClick={handleDelete}
-            />
+    <div className="achievements-page">
+      <NavBar />
+      <div className="achievements-content">
+        <div className="achievement-card">
+          <div className="achievement-header">
+            <h1>Update Achievement</h1>
+            <div className="header-actions">
+              <FaEdit className="action-icon edit" />
+              <RiDeleteBin6Fill className="action-icon delete" onClick={handleDelete} />
+            </div>
+            <p>Edit your achievement details</p>
           </div>
-          <p>Edit your achievement details</p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="register-form-new">
-          <div className="profile-upload" onClick={() => document.querySelector('input[type="file"]').click()}>
-            {previewImage ? (
-              <img 
-                src={previewImage} 
-                alt="Achievement" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-              />
-            ) : (
-              <div className="upload-placeholder">
-                Click to upload image
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Upload Image</label>
+              {previewImage && (
+                <div className="image-preview">
+                  <img src={previewImage} alt="Achievement" />
+                </div>
+              )}
+              <div className="file-input-container">
+                <input
+                  type="file"
+                  className="custom-file-input"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
               </div>
-            )}
-          </div>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            accept="image/*"
-            style={{ display: 'none' }}
-          />
+            </div>
 
-          <div className="form-columns">
-            <div className="input-group">
+            <div className="form-group">
+              <label>Title</label>
               <input
                 type="text"
                 name="title"
+                className="form-input"
                 placeholder="Achievement Title"
                 value={formData.title}
                 onChange={handleInputChange}
                 required
               />
             </div>
-            <div className="input-group">
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                name="description"
+                className="form-input"
+                placeholder="Describe your achievement"
+                value={formData.description}
+                onChange={handleInputChange}
+                required
+                rows="4"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Category</label>
               <select
+                className="form-input"
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
@@ -185,39 +240,67 @@ function UpdateAchievements() {
                 <option value="Finance for Beginners">Finance for Beginners</option>
               </select>
             </div>
-          </div>
 
-          <div className="input-group">
-            <textarea
-              name="description"
-              placeholder="Describe your achievement"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-              rows="4"
-            />
-          </div>
+            <div className="form-group">
+              <label>Date</label>
+              <input
+                type="date"
+                name="date"
+                className="form-input"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
 
-          <div className="input-group">
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div className="form-actions">
-            <button 
-              type="submit" 
-              className="register-button"
-              disabled={isLoading}
-            >
+            <button type="submit" className="submit-button" disabled={isLoading}>
               {isLoading ? 'Updating...' : 'Update Achievement'}
             </button>
+          </form>
+
+          <div className="achievement-interactions">
+            <button
+              className={`interaction-btn ${formData.likes.includes(userId) ? 'liked' : ''}`}
+              onClick={handleLike}
+            >
+              <FaHeart /> {formData.likes.length}
+            </button>
+            <button className="interaction-btn" onClick={handleComment}>
+              <FaComment /> {formData.comments.length}
+            </button>
+            <button className="interaction-btn" onClick={handleShare}>
+              <FaShare /> Share
+            </button>
           </div>
-        </form>
+
+          <div className="comments-section">
+            <input
+              type="text"
+              className="comment-input"
+              placeholder="Add a comment..."
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+            />
+            <button
+              className="comment-submit"
+              onClick={handleComment}
+              disabled={!commentInput}
+            >
+              Post
+            </button>
+            {formData.comments.map((comment, index) => (
+              <div key={index} className="comment">
+                <span className="comment-user">{comment.userId}</span>: {comment.comment}
+              </div>
+            ))}
+          </div>
+
+          <div className="achievement-badges">
+            {formData.badges.map((badge) => (
+              <span key={badge} className="badge">{badge}</span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -59,10 +59,10 @@ function AddAchievements() {
       body: JSON.stringify({ ...formData, imageUrl }),
     });
     if (response.ok) {
-      alert('Achievements added successfully!');
+      alert('Achievement added successfully!');
       window.location.href = '/myAchievements';
     } else {
-      alert('Failed to add Achievements.');
+      alert('Failed to add Achievement.');
     }
   };
 
@@ -73,6 +73,7 @@ function AddAchievements() {
         <div className="achievement-card">
           <div className="achievement-header">
             <h1>Share Your Achievement</h1>
+            <p>Celebrate your success with the community!</p>
           </div>
 
           <form onSubmit={handleSubmit}>
