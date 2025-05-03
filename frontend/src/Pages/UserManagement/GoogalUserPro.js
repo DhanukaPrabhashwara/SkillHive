@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEnvelope, FaPhone, FaTools } from "react-icons/fa";
-import "./UserProfile.css";
+import "./guserprofile.css";
 import Pro from "./img/img.png";
 import NavBar from "../../Components/NavBar/NavBar";
 export const fetchUserDetails = async (userId) => {
