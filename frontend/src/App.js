@@ -19,6 +19,8 @@ import MyAchievements from "./Pages/AchievementsManagement/MyAchievements";
 import MyAllPost from "./Pages/PostManagement/MyAllPost";
 import GoogalUserPro from "./Pages/UserManagement/GoogalUserPro";
 import MyLearningPlan from "./Pages/LearningPlan/MyLearningPlan";
+import ChatWidget from './Components/Chat/ChatWidget';
+
 
 function ProtectedRoute({ children }) {
   const userID = localStorage.getItem("userID");
@@ -190,6 +192,8 @@ function App() {
           />
         </Routes>
       </React.Fragment>
+      <ChatWidget />
+      
     </div>
   );
 }
