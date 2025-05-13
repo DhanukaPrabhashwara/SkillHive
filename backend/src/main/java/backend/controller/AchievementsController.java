@@ -32,7 +32,6 @@ public class AchievementsController {
     @PostMapping("/achievements")
     public AchievementsModel newAchievementsModel(@RequestBody AchievementsModel newAchievementsModel) {
         newAchievementsModel.setLikes(new ArrayList<>());
-        newAchievementsModel.setComments(new ArrayList<>());
         newAchievementsModel.setBadges(new ArrayList<>());
         return achievementsRepository.save(newAchievementsModel);
     }
@@ -77,7 +76,6 @@ public class AchievementsController {
                     achievementsModel.setCategory(newAchievementsModel.getCategory());
                     achievementsModel.setImageUrl(newAchievementsModel.getImageUrl());
                     achievementsModel.setLikes(newAchievementsModel.getLikes());
-                    achievementsModel.setComments(newAchievementsModel.getComments());
                     achievementsModel.setBadges(assignBadges(newAchievementsModel));
                     return achievementsRepository.save(achievementsModel);
                 }).orElseThrow(() -> new AchievementsNotFoundException(id));
