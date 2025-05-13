@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import { FaEdit, FaHeart, FaShare } from 'react-icons/fa';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import NavBar from '../../Components/NavBar/NavBar';
 import { IoIosCreate } from 'react-icons/io';
@@ -9,7 +9,6 @@ function AllAchievements() {
   const [progressData, setProgressData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [commentInput, setCommentInput] = useState({});
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
@@ -48,26 +47,6 @@ function AllAchievements() {
       }
     } catch (error) {
       console.error('Error liking achievement:', error);
-    }
-  };
-
-  const handleComment = async (id) => {
-    if (!commentInput[id]) return;
-    try {
-      const response = await fetch(`http://localhost:8080/achievements/${id}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, comment: commentInput[id] }),
-      });
-      if (response.ok) {
-        const updatedAchievement = await response.json();
-        setFilteredData((prev) =>
-          prev.map((item) => (item.id === id ? updatedAchievement : item))
-        );
-        setCommentInput((prev) => ({ ...prev, [id]: '' }));
-      }
-    } catch (error) {
-      console.error('Error commenting on achievement:', error);
     }
   };
 
@@ -157,35 +136,9 @@ function AllAchievements() {
                     >
                       <FaHeart /> {achievement.likes ? achievement.likes.length : 0}
                     </button>
-                    <button className="interaction-btn" onClick={() => handleComment(achievement.id)}>
-                      <FaComment /> {achievement.comments ? achievement.comments.length : 0}
-                    </button>
                     <button className="interaction-btn" onClick={() => handleShare(achievement)}>
                       <FaShare /> Share
                     </button>
-                  </div>
-                  <div className="comments-section">
-                    <input
-                      type="text"
-                      className="comment-input"
-                      placeholder="Add a comment..."
-                      value={commentInput[achievement.id] || ''}
-                      onChange={(e) =>
-                        setCommentInput((prev) => ({ ...prev, [achievement.id]: e.target.value }))
-                      }
-                    />
-                    <button
-                      className="comment-submit"
-                      onClick={() => handleComment(achievement.id)}
-                      disabled={!commentInput[achievement.id]}
-                    >
-                      Post
-                    </button>
-                    {achievement.comments && achievement.comments.map((comment, index) => (
-                      <div key={index} className="comment">
-                        <span className="comment-user">{comment.userId}</span>: {comment.comment}
-                      </div>
-                    ))}
                   </div>
                   {achievement.postOwnerID === userId && (
                     <div className="achievement-actions">
