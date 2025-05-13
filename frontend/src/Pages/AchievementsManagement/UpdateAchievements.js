@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../../Components/NavBar/NavBar';
-import { FaEdit, FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import { FaEdit, FaHeart, FaShare } from 'react-icons/fa';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import './Achievements.css';
 
@@ -17,13 +17,11 @@ function UpdateAchievements() {
     postOwnerName: '',
     imageUrl: '',
     likes: [],
-    comments: [],
-    badges: [],
+    badges: []
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [commentInput, setCommentInput] = useState('');
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
@@ -72,24 +70,6 @@ function UpdateAchievements() {
       }
     } catch (error) {
       console.error('Error liking achievement:', error);
-    }
-  };
-
-  const handleComment = async () => {
-    if (!commentInput) return;
-    try {
-      const response = await fetch(`http://localhost:8080/achievements/${id}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, comment: commentInput }),
-      });
-      if (response.ok) {
-        const updatedAchievement = await response.json();
-        setFormData(updatedAchievement);
-        setCommentInput('');
-      }
-    } catch (error) {
-      console.error('Error commenting on achievement:', error);
     }
   };
 
@@ -166,16 +146,12 @@ function UpdateAchievements() {
   };
 
   return (
-    <div className="achievements-page">
+    <div className="add-achievement-page">
       <NavBar />
-      <div className="achievements-content">
+      <div className="achievement-container">
         <div className="achievement-card">
           <div className="achievement-header">
             <h1>Update Achievement</h1>
-            <div className="header-actions">
-              <FaEdit className="action-icon edit" />
-              <RiDeleteBin6Fill className="action-icon delete" onClick={handleDelete} />
-            </div>
             <p>Edit your achievement details</p>
           </div>
 
@@ -263,40 +239,15 @@ function UpdateAchievements() {
               className={`interaction-btn ${formData.likes.includes(userId) ? 'liked' : ''}`}
               onClick={handleLike}
             >
-              <FaHeart /> {formData.likes.length}
-            </button>
-            <button className="interaction-btn" onClick={handleComment}>
-              <FaComment /> {formData.comments.length}
+              <FaHeart /> {formData.likes ? formData.likes.length : 0}
             </button>
             <button className="interaction-btn" onClick={handleShare}>
               <FaShare /> Share
             </button>
           </div>
 
-          <div className="comments-section">
-            <input
-              type="text"
-              className="comment-input"
-              placeholder="Add a comment..."
-              value={commentInput}
-              onChange={(e) => setCommentInput(e.target.value)}
-            />
-            <button
-              className="comment-submit"
-              onClick={handleComment}
-              disabled={!commentInput}
-            >
-              Post
-            </button>
-            {formData.comments.map((comment, index) => (
-              <div key={index} className="comment">
-                <span className="comment-user">{comment.userId}</span>: {comment.comment}
-              </div>
-            ))}
-          </div>
-
           <div className="achievement-badges">
-            {formData.badges.map((badge) => (
+            {formData.badges && formData.badges.map((badge) => (
               <span key={badge} className="badge">{badge}</span>
             ))}
           </div>
