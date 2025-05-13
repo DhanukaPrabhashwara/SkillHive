@@ -143,20 +143,34 @@
   }
   
   .custom-file-input {
-    width: 100%;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    position: relative;
+    padding: 15px 25px;
+    background: linear-gradient(45deg, #6b46c1, #805ad5);
+    border: none;
     border-radius: 12px;
     color: white;
     cursor: pointer;
     text-align: center;
     transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(107, 70, 193, 0.2);
   }
-  
+
   .custom-file-input:hover {
-    border-color: rgba(107, 70, 193, 0.5);
-    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #805ad5, #6b46c1);
+    box-shadow: 0 6px 20px rgba(107, 70, 193, 0.3);
+  }
+
+  .custom-file-input::file-selector-button {
+    display: none;
+  }
+
+  .custom-file-input::before {
+    content: '📎 Choose Files';
+    display: inline-block;
+    color: white;
   }
   
   .file-input-label {
@@ -174,4 +188,3 @@
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
   }
-  

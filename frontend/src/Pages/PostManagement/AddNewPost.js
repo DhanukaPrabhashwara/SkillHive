@@ -139,7 +139,7 @@ function AddNewPost() {
             <div className="form-group">
               <label>Media Files</label>
               <div className="file-input-container">
-                <label className="file-input-label">Add photos or videos</label>
+                <label className="file-input-label">Supported formats: JPEG, PNG, MP4 (max 3 images, 1 video)</label>
                 <input
                   type="file"
                   className="custom-file-input"

@@ -117,6 +117,32 @@ textarea.form-input {
   background: rgba(255, 255, 255, 0.15);
 }
 
+.image-source-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.source-button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.source-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.source-button.active {
+  background: linear-gradient(45deg, #6b46c1, #805ad5);
+  border-color: transparent;
+}
+
 .submit-button {
   width: 100%;
   padding: 15px;
