@@ -65,6 +65,8 @@ function MyLearningPlan() {
   };
 
   return (
+    <div>
+      <NavBar />
     <div className="register-container">
       <div className="register-background">
         <div className="animated-shape"></div>
@@ -155,6 +157,8 @@ function MyLearningPlan() {
         </button>
       </div>
     </div>
+    </div>
+    
   );
 }
 

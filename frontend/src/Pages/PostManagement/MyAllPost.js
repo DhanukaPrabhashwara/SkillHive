@@ -297,6 +297,8 @@ function MyAllPost() {
   };
 
   return (
+    <div>
+      <NavBar />
     <div className="register-container">
       <div className="register-background">
         <div className="animated-shape"></div>
@@ -512,6 +514,7 @@ function MyAllPost() {
           <img src={`http://localhost:8080${selectedMedia}`} alt="Full Media" className="modal-media" />
         )}
       </Modal>
+    </div>
     </div>
   );
 }
