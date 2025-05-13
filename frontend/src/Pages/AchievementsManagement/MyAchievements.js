@@ -181,7 +181,7 @@ function MyAchievements() {
                     </button>
                     {progress.comments.map((comment, index) => (
                       <div key={index} className="comment">
-                        <span className="comment-user">{comment.userId}</span>: {comment.comment}
+                        <span className="comment-user">{comment.userFullName || 'Anonymous'}</span>: {comment.comment}
                       </div>
                     ))}
                   </div>

@@ -1,8 +1,11 @@
 package backend.controller;
 
 import backend.exception.AchievementsNotFoundException;
+import backend.exception.UserNotFoundException;
 import backend.model.AchievementsModel;
+import backend.model.UserModel;
 import backend.repository.AchievementsRepository;
+import backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +24,8 @@ import java.util.*;
 public class AchievementsController {
     @Autowired
     private AchievementsRepository achievementsRepository;
+    @Autowired
+    private UserRepository userRepository; // Add this field
     private final Path root = Paths.get("uploads/achievementsPost");
 
     // Insert new achievement
@@ -111,26 +116,11 @@ public class AchievementsController {
         return achievement;
     }
 
-    // Comment on an achievement
-    @PostMapping("/achievements/{id}/comment")
-    public AchievementsModel commentAchievement(@PathVariable String id, @RequestBody Map<String, String> body) {
-        AchievementsModel achievement = achievementsRepository.findById(id)
-                .orElseThrow(() -> new AchievementsNotFoundException(id));
-        String userId = body.get("userId");
-        String comment = body.get("comment");
-        achievement.getComments().add(new AchievementsModel.Comment(userId, comment));
-        achievementsRepository.save(achievement);
-        return achievement;
-    }
-
     // Assign badges based on achievement criteria
     private List<String> assignBadges(AchievementsModel achievement) {
         List<String> badges = new ArrayList<>(achievement.getBadges());
         if (achievement.getLikes().size() >= 10) {
             badges.add("Popular");
-        }
-        if (achievement.getComments().size() >= 5) {
-            badges.add("Engaging");
         }
         return badges;
     }
