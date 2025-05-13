@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import { FaEdit, FaHeart, FaShare } from 'react-icons/fa';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import NavBar from '../../Components/NavBar/NavBar';
 import { IoIosCreate } from 'react-icons/io';
@@ -8,7 +8,6 @@ import './Achievements.css';
 function MyAchievements() {
   const [progressData, setProgressData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [commentInput, setCommentInput] = useState({});
   const userId = localStorage.getItem('userID');
 
   useEffect(() => {
@@ -37,26 +36,6 @@ function MyAchievements() {
       }
     } catch (error) {
       console.error('Error liking achievement:', error);
-    }
-  };
-
-  const handleComment = async (id) => {
-    if (!commentInput[id]) return;
-    try {
-      const response = await fetch(`http://localhost:8080/achievements/${id}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, comment: commentInput[id] }),
-      });
-      if (response.ok) {
-        const updatedAchievement = await response.json();
-        setFilteredData((prev) =>
-          prev.map((item) => (item.id === id ? updatedAchievement : item))
-        );
-        setCommentInput((prev) => ({ ...prev, [id]: '' }));
-      }
-    } catch (error) {
-      console.error('Error commenting on achievement:', error);
     }
   };
 
@@ -121,14 +100,18 @@ function MyAchievements() {
                     <p className="date_card_dte">{progress.date}</p>
                   </div>
                   <div className="achievement-actions">
-                    <FaEdit
-                      onClick={() => (window.location.href = `/updateAchievements/${progress.id}`)}
-                      className="action-icon edit"
-                    />
-                    <RiDeleteBin6Fill
+                    <button 
+                      className="action-btn edit"
+                      onClick={() => window.location.href = `/updateAchievements/${progress.id}`}
+                    >
+                      <FaEdit /> Update
+                    </button>
+                    <button 
+                      className="action-btn delete"
                       onClick={() => handleDelete(progress.id)}
-                      className="action-icon delete"
-                    />
+                    >
+                      <RiDeleteBin6Fill /> Delete
+                    </button>
                   </div>
                 </div>
                 <div className="dis_con">
@@ -144,46 +127,20 @@ function MyAchievements() {
                     />
                   )}
                   <div className="achievement-badges">
-                    {progress.badges.map((badge) => (
+                    {progress.badges && progress.badges.map((badge) => (
                       <span key={badge} className="badge">{badge}</span>
                     ))}
                   </div>
                   <div className="achievement-interactions">
                     <button
-                      className={`interaction-btn ${progress.likes.includes(userId) ? 'liked' : ''}`}
+                      className={`interaction-btn ${progress.likes?.includes(userId) ? 'liked' : ''}`}
                       onClick={() => handleLike(progress.id)}
                     >
-                      <FaHeart /> {progress.likes.length}
-                    </button>
-                    <button className="interaction-btn" onClick={() => handleComment(progress.id)}>
-                      <FaComment /> {progress.comments.length}
+                      <FaHeart /> {progress.likes?.length || 0}
                     </button>
                     <button className="interaction-btn" onClick={() => handleShare(progress)}>
                       <FaShare /> Share
                     </button>
-                  </div>
-                  <div className="comments-section">
-                    <input
-                      type="text"
-                      className="comment-input"
-                      placeholder="Add a comment..."
-                      value={commentInput[progress.id] || ''}
-                      onChange={(e) =>
-                        setCommentInput((prev) => ({ ...prev, [progress.id]: e.target.value }))
-                      }
-                    />
-                    <button
-                      className="comment-submit"
-                      onClick={() => handleComment(progress.id)}
-                      disabled={!commentInput[progress.id]}
-                    >
-                      Post
-                    </button>
-                    {progress.comments.map((comment, index) => (
-                      <div key={index} className="comment">
-                        <span className="comment-user">{comment.userFullName || 'Anonymous'}</span>: {comment.comment}
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>

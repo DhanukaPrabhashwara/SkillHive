@@ -193,12 +193,13 @@
 }
 
 .badge {
-  background: linear-gradient(45deg, #6b46c1, #805ad5);
-  color: #fff;
+  background: rgba(107, 70, 193, 0.2);
+  color: #c4b5fd;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
-  font-weight: 500;
 }
 
 .achievement-interactions {
@@ -261,4 +262,34 @@
 .create-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(107, 70, 193, 0.3);
+}
+
+.name_section_post_owner_name {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.date_card_dte {
+  color: #94a3af;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.topic_cont {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+.dis_con_pera {
+  color: #e2e8f0;
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  margin-bottom: 16px;
 }

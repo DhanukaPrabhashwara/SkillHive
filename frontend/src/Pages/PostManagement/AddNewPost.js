@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
+import { FiUploadCloud } from 'react-icons/fi';
 import './AddPost.css';
 
 function AddNewPost() {
@@ -61,6 +62,15 @@ function AddNewPost() {
 
     setMedia(files);
     setMediaPreviews(previews);
+  };
+
+  const removeMedia = (index) => {
+    const newMedia = [...media];
+    const newPreviews = [...mediaPreviews];
+    newMedia.splice(index, 1);
+    newPreviews.splice(index, 1);
+    setMedia(newMedia);
+    setMediaPreviews(newPreviews);
   };
 
   const handleSubmit = async (e) => {
@@ -138,31 +148,56 @@ function AddNewPost() {
 
             <div className="form-group">
               <label>Media Files</label>
-              <div className="file-input-container">
-                <label className="file-input-label">Supported formats: JPEG, PNG, MP4 (max 3 images, 1 video)</label>
+              <div className="media-upload-container">
                 <input
                   type="file"
+                  id="file-input"
                   className="custom-file-input"
                   accept="image/jpeg,image/png,image/jpg,video/mp4"
                   multiple
                   onChange={handleMediaChange}
+                  style={{ display: 'none' }}
                 />
-              </div>
-              
-              <div className="media-preview">
-                {mediaPreviews.map((preview, index) => (
-                  <div key={index} className="media-item">
-                    {preview.type.startsWith('video/') ? (
-                      <video controls>
-                        <source src={preview.url} type={preview.type} />
-                        Your browser does not support the video tag.
-                      </video>
-                    ) : (
-                      <img src={preview.url} alt={`Preview ${index}`} />
-                    )}
+                <label htmlFor="file-input" style={{ cursor: 'pointer' }}>
+                  <FiUploadCloud className="upload-icon" />
+                  <div className="upload-text">
+                    <strong>Click to upload</strong> or drag and drop
+                    <div className="upload-limit-info">
+                      Supported formats: JPEG, PNG, MP4 
+                      <br />
+                      Max: 3 images, 1 video (30s)
+                    </div>
                   </div>
-                ))}
+                </label>
               </div>
+
+              {mediaPreviews.length > 0 && (
+                <div className="media-preview">
+                  {mediaPreviews.map((preview, index) => (
+                    <div key={index} className="media-item">
+                      {preview.type.startsWith('video/') ? (
+                        <>
+                          <video>
+                            <source src={preview.url} type={preview.type} />
+                          </video>
+                          <span className="file-type-badge">Video</span>
+                        </>
+                      ) : (
+                        <>
+                          <img src={preview.url} alt={`Preview ${index}`} />
+                          <span className="file-type-badge">Image</span>
+                        </>
+                      )}
+                      <button 
+                        className="media-remove" 
+                        onClick={() => removeMedia(index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button type="submit" className="submit-button">
