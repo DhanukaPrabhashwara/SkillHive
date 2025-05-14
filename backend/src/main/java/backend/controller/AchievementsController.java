@@ -1,8 +1,11 @@
 package backend.controller;
 
 import backend.exception.AchievementsNotFoundException;
+import backend.exception.UserNotFoundException;
 import backend.model.AchievementsModel;
+import backend.model.UserModel;
 import backend.repository.AchievementsRepository;
+import backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,25 +14,29 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
 public class AchievementsController {
     @Autowired
     private AchievementsRepository achievementsRepository;
+    @Autowired
+    private UserRepository userRepository; // Add this field
     private final Path root = Paths.get("uploads/achievementsPost");
-    //Insert
+
+    // Insert new achievement
     @PostMapping("/achievements")
     public AchievementsModel newAchievementsModel(@RequestBody AchievementsModel newAchievementsModel) {
+        newAchievementsModel.setLikes(new ArrayList<>());
+        newAchievementsModel.setBadges(new ArrayList<>());
         return achievementsRepository.save(newAchievementsModel);
     }
 
+    // Upload image
     @PostMapping("/achievements/upload")
     public String uploadImage(@RequestParam("file") MultipartFile file) {
         try {
@@ -37,23 +44,26 @@ public class AchievementsController {
                     .substring(file.getOriginalFilename().lastIndexOf("."));
             String filename = UUID.randomUUID() + extension;
             Files.copy(file.getInputStream(), this.root.resolve(filename));
-            return filename; // Returns just the random filename
+            return filename;
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload image: " + e.getMessage());
         }
     }
 
+    // Get all achievements
     @GetMapping("/achievements")
     List<AchievementsModel> getAll() {
         return achievementsRepository.findAll();
     }
 
+    // Get achievement by ID
     @GetMapping("/achievements/{id}")
     AchievementsModel getById(@PathVariable String id) {
         return achievementsRepository.findById(id)
                 .orElseThrow(() -> new AchievementsNotFoundException(id));
     }
 
+    // Update achievement
     @PutMapping("/achievements/{id}")
     AchievementsModel update(@RequestBody AchievementsModel newAchievementsModel, @PathVariable String id) {
         return achievementsRepository.findById(id)
@@ -65,15 +75,19 @@ public class AchievementsController {
                     achievementsModel.setDate(newAchievementsModel.getDate());
                     achievementsModel.setCategory(newAchievementsModel.getCategory());
                     achievementsModel.setImageUrl(newAchievementsModel.getImageUrl());
+                    achievementsModel.setLikes(newAchievementsModel.getLikes());
+                    achievementsModel.setBadges(assignBadges(newAchievementsModel));
                     return achievementsRepository.save(achievementsModel);
                 }).orElseThrow(() -> new AchievementsNotFoundException(id));
     }
 
+    // Delete achievement
     @DeleteMapping("/achievements/{id}")
     public void delete(@PathVariable String id) {
         achievementsRepository.deleteById(id);
     }
 
+    // Get image
     @GetMapping("/achievements/images/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
@@ -85,5 +99,27 @@ public class AchievementsController {
         } catch (Exception e) {
             throw new RuntimeException("Error loading image: " + e.getMessage());
         }
+    }
+
+    // Like an achievement
+    @PostMapping("/achievements/{id}/like")
+    public AchievementsModel likeAchievement(@PathVariable String id, @RequestBody Map<String, String> body) {
+        AchievementsModel achievement = achievementsRepository.findById(id)
+                .orElseThrow(() -> new AchievementsNotFoundException(id));
+        String userId = body.get("userId");
+        if (!achievement.getLikes().contains(userId)) {
+            achievement.getLikes().add(userId);
+            achievementsRepository.save(achievement);
+        }
+        return achievement;
+    }
+
+    // Assign badges based on achievement criteria
+    private List<String> assignBadges(AchievementsModel achievement) {
+        List<String> badges = new ArrayList<>(achievement.getBadges());
+        if (achievement.getLikes().size() >= 10) {
+            badges.add("Popular");
+        }
+        return badges;
     }
 }

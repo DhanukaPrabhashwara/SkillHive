@@ -15,6 +15,7 @@ import { TbPencilCancel } from "react-icons/tb";
 import { FaCommentAlt } from "react-icons/fa";
 import Quiz from '../../Components/Quiz/Quiz';
 import './PostManagement.css';
+import Swal from 'sweetalert2';
 Modal.setAppElement('#root');
 
 function AllPost() {
@@ -209,32 +210,46 @@ function AllPost() {
   };
 
   const handleDeleteComment = async (postId, commentId) => {
-    const userID = localStorage.getItem('userID');
-    try {
-      await axios.delete(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        params: { userID },
-      });
+  const userID = localStorage.getItem('userID');
 
-      // Update state to remove the deleted comment
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
-            : post
-        )
-      );
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this comment?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+  });
 
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
-            : post
-        )
-      );
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-    }
-  };
+  if (!result.isConfirmed) return;
+
+  try {
+    await axios.delete(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
+      params: { userID },
+    });
+
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
+          : post
+      )
+    );
+
+    setFilteredPosts((prevFilteredPosts) =>
+      prevFilteredPosts.map((post) =>
+        post.id === postId
+          ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
+          : post
+      )
+    );
+
+    Swal.fire('Deleted!', 'The comment has been deleted.', 'success');
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+  }
+};
 
   const handleSaveComment = async (postId, commentId, content) => {
     try {

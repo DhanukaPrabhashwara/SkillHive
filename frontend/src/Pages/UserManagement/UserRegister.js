@@ -47,15 +47,26 @@ function UserRegister() {
 
     const sendVerificationCode = async (email) => {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
-        localStorage.setItem('verificationCode', code);
         try {
-            await fetch('http://localhost:8080/sendVerificationCode', {
+            const response = await fetch('http://localhost:8080/sendVerificationCode', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, code }),
             });
+            
+            const data = await response.json();
+            if (data.success) {
+                localStorage.setItem('verificationCode', code);
+                localStorage.setItem('verificationCodeExpiry', Date.now() + 600000); // 10 minutes
+                return true;
+            } else {
+                alert('Failed to send verification code: ' + data.message);
+                return false;
+            }
         } catch (error) {
             console.error('Error sending verification code:', error);
+            alert('Failed to send verification code. Please try again.');
+            return false;
         }
     };
 
@@ -123,9 +134,24 @@ function UserRegister() {
 
     const handleVerifyCode = () => {
         const savedCode = localStorage.getItem('verificationCode');
+        const expiryTime = localStorage.getItem('verificationCodeExpiry');
+        
+        if (!savedCode || !expiryTime) {
+            alert('Verification code not found. Please request a new one.');
+            return;
+        }
+        
+        if (Date.now() > parseInt(expiryTime)) {
+            alert('Verification code has expired. Please register again.');
+            localStorage.removeItem('verificationCode');
+            localStorage.removeItem('verificationCodeExpiry');
+            return;
+        }
+        
         if (userEnteredCode === savedCode) {
             alert('Verification successful!');
             localStorage.removeItem('verificationCode');
+            localStorage.removeItem('verificationCodeExpiry');
             window.location.href = '/';
         } else {
             alert('Invalid verification code. Please try again.');

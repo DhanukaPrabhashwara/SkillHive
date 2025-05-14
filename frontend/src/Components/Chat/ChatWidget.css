@@ -1,0 +1,219 @@
+.chat-widget-container {
+    position: fixed;
+    bottom: 100px;
+    right: 100px;  /* increased from 20px to avoid overlap */
+    z-index: 999;  /* decreased to be below action buttons */
+}
+
+.chat-widget-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #6b46c1, #805ad5);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+}
+
+.chat-widget-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(107, 70, 193, 0.4);
+}
+
+.chat-widget-button.open {
+    background: #e53e3e;
+}
+
+.chat-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    max-width: 90vw;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-header {
+    padding: 20px;
+    background: linear-gradient(45deg, #6b46c1, #805ad5);
+    color: white;
+    border-radius: 20px 20px 0 0;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.messages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+.message {
+    max-width: 80%;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.user-message {
+    background: #6b46c1;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 5px;
+}
+
+.assistant-message {
+    background: white;
+    color: #333;
+    margin-right: auto;
+    border-bottom-left-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.chat-link {
+    color: #4299e1;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.chat-link:hover {
+    text-decoration: underline;
+}
+
+.chat-input-container {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+    border-radius: 0 0 20px 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.chat-input:focus {
+    border-color: #6b46c1;
+}
+
+.send-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background: #6b46c1;
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.send-button:hover {
+    background: #805ad5;
+    transform: scale(1.05);
+}
+
+.send-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 4px 8px;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: #6b46c1;
+    border-radius: 50%;
+    animation: bounce 0.8s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+    .chat-window {
+        width: 85vw;
+        height: 80vh;
+        bottom: 70px;
+    }
+    
+    .chat-widget-button {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .message {
+        max-width: 85%;
+    }
+}
+
+/* Make links in messages stand out */
+.assistant-message a {
+    color: #6b46c1;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.assistant-message a:hover {
+    color: #805ad5;
+}

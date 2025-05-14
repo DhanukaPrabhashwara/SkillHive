@@ -13,11 +13,23 @@ function AddAchievements() {
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageSource, setImageSource] = useState('upload'); // 'upload' or 'url'
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
     setImagePreview(file ? URL.createObjectURL(file) : null);
+    setImageUrl('');
+    setImageSource('upload');
+  };
+
+  const handleImageUrlChange = (e) => {
+    const url = e.target.value;
+    setImageUrl(url);
+    setImagePreview(url);
+    setImage(null);
+    setImageSource('url');
   };
 
   useEffect(() => {
@@ -43,7 +55,8 @@ function AddAchievements() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let imageUrl = '';
-    if (image) {
+    
+    if (imageSource === 'upload' && image) {
       const formData = new FormData();
       formData.append('file', image);
       const uploadResponse = await fetch('http://localhost:8080/achievements/upload', {
@@ -51,6 +64,8 @@ function AddAchievements() {
         body: formData,
       });
       imageUrl = await uploadResponse.text();
+    } else if (imageSource === 'url') {
+      imageUrl = imagePreview;
     }
 
     const response = await fetch('http://localhost:8080/achievements', {
@@ -59,10 +74,10 @@ function AddAchievements() {
       body: JSON.stringify({ ...formData, imageUrl }),
     });
     if (response.ok) {
-      alert('Achievements added successfully!');
+      alert('Achievement added successfully!');
       window.location.href = '/myAchievements';
     } else {
-      alert('Failed to add Achievements.');
+      alert('Failed to add Achievement.');
     }
   };
 
@@ -73,25 +88,55 @@ function AddAchievements() {
         <div className="achievement-card">
           <div className="achievement-header">
             <h1>Share Your Achievement</h1>
+            <p>Celebrate your success with the community!</p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Upload Image</label>
+              <label>Image Source</label>
+              <div className="image-source-buttons">
+                <button
+                  type="button"
+                  className={`source-button ${imageSource === 'upload' ? 'active' : ''}`}
+                  onClick={() => setImageSource('upload')}
+                >
+                  Upload Image
+                </button>
+                <button
+                  type="button"
+                  className={`source-button ${imageSource === 'url' ? 'active' : ''}`}
+                  onClick={() => setImageSource('url')}
+                >
+                  Image URL
+                </button>
+              </div>
+
               {imagePreview && (
                 <div className="image-preview">
                   <img src={imagePreview} alt="Preview" />
                 </div>
               )}
-              <div className="file-input-container">
+
+              {imageSource === 'upload' ? (
+                <div className="file-input-container">
+                  <input
+                    type="file"
+                    className="custom-file-input"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    required={!imageUrl}
+                  />
+                </div>
+              ) : (
                 <input
-                  type="file"
-                  className="custom-file-input"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  required
+                  type="url"
+                  className="form-input"
+                  placeholder="Enter image URL"
+                  value={imageUrl}
+                  onChange={handleImageUrlChange}
+                  required={!image}
                 />
-              </div>
+              )}
             </div>
 
             <div className="form-group">
