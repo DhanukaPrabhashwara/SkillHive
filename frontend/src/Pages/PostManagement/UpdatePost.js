@@ -1,35 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/NavBar';
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
+import { FiUploadCloud } from 'react-icons/fi';
+import './AddPost.css';
 
 function UpdatePost() {
-  const { id } = useParams(); // Get the post ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(''); // New state for category
-  const [existingMedia, setExistingMedia] = useState([]); // Initialize as an empty array
-  const [newMedia, setNewMedia] = useState([]); // New media files to upload
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [category, setCategory] = useState('');
+  const [existingMedia, setExistingMedia] = useState([]);
+  const [newMedia, setNewMedia] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch the post details
     const fetchPost = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/posts/${id}`);
         const post = response.data;
-        setTitle(post.title || ''); // Ensure title is not undefined
-        setDescription(post.description || ''); // Ensure description is not undefined
-        setCategory(post.category || ''); // Set category
-        setExistingMedia(post.media || []); // Ensure media is an array
-        setLoading(false); // Set loading to false after data is fetched
+        setTitle(post.title || '');
+        setDescription(post.description || '');
+        setCategory(post.category || '');
+        setExistingMedia(post.media || []);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching post:', error);
         alert('Failed to fetch post details.');
-        setLoading(false); // Set loading to false even if there's an error
+        setLoading(false);
       }
     };
 
@@ -46,7 +45,7 @@ function UpdatePost() {
       await axios.delete(`http://localhost:8080/posts/${id}/media`, {
         data: { mediaUrl },
       });
-      setExistingMedia(existingMedia.filter((url) => url !== mediaUrl)); // Remove from UI
+      setExistingMedia(existingMedia.filter((url) => url !== mediaUrl));
       alert('Media file deleted successfully!');
     } catch (error) {
       console.error('Error deleting media file:', error);
@@ -90,7 +89,7 @@ function UpdatePost() {
 
   const handleNewMediaChange = async (e) => {
     const files = Array.from(e.target.files);
-    const maxFileSize = 50 * 1024 * 1024; // 50MB
+    const maxFileSize = 50 * 1024 * 1024;
     const maxImageCount = 3;
 
     let imageCount = existingMedia.filter((url) => !url.endsWith('.mp4')).length;
@@ -135,7 +134,7 @@ function UpdatePost() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('category', category); // Include category in the update
+    formData.append('category', category);
     newMedia.forEach((file) => formData.append('newMediaFiles', file));
 
     try {
@@ -151,42 +150,47 @@ function UpdatePost() {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Display a loading message while fetching data
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="register-container">
-      <div className="register-background">
-        <div className="animated-shape"></div>
-        <div className="animated-shape"></div>
-        <div className="animated-shape"></div>
-      </div>
-      
-      <div className="register-card">
-        <div className="register-header">
-          <h1>Update Post</h1>
-          <div className="header-actions">
-            <FaEdit className="header-icon" />
-            <RiDeleteBin6Fill 
-              className="header-icon delete" 
-              onClick={handleDelete}
-            />
+    <div className="add-post-page">
+      <NavBar />
+      <div className="add-post-container">
+        <div className="add-post-card">
+          <div className="add-post-header">
+            <h1>Update Post</h1>
           </div>
-        </div>
 
-        <form onSubmit={handleSubmit} className="register-form-new">
-          <div className="form-columns">
-            <div className="input-group">
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Title</label>
               <input
                 type="text"
-                placeholder="Title"
+                className="form-input"
+                placeholder="Enter post title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
-            <div className="input-group">
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                className="form-input"
+                placeholder="Enter post description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={5}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Category</label>
               <select
+                className="form-input category-select"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
@@ -199,60 +203,75 @@ function UpdatePost() {
                 <option value="Finance for Beginners">Finance for Beginners</option>
               </select>
             </div>
-          </div>
 
-          <div className="input-group">
-            <textarea
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={4}
-            />
-          </div>
+            <div className="form-group">
+              <label>Media Files</label>
+              <div className="media-upload-container">
+                <input
+                  type="file"
+                  id="file-input"
+                  className="custom-file-input"
+                  accept="image/jpeg,image/png,image/jpg,video/mp4"
+                  multiple
+                  onChange={handleNewMediaChange}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="file-input" style={{ cursor: 'pointer' }}>
+                  <FiUploadCloud className="upload-icon" />
+                  <div className="upload-text">
+                    <strong>Click to upload new files</strong> or drag and drop
+                    <div className="upload-limit-info">
+                      Supported formats: JPEG, PNG, MP4 
+                      <br />
+                      Max: 3 images, 1 video (30s)
+                    </div>
+                  </div>
+                </label>
+              </div>
 
-          <div className="skills-container">
-            <label>Current Media</label>
-            <div className="media-preview-grid">
-              {existingMedia.map((mediaUrl, index) => (
-                <div key={index} className="media-item">
-                  {mediaUrl.endsWith('.mp4') ? (
-                    <video controls>
-                      <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                    </video>
-                  ) : (
-                    <img src={`http://localhost:8080${mediaUrl}`} alt={`Media ${index}`} />
-                  )}
-                  <button
-                    className="remove-media"
-                    onClick={() => handleDeleteMedia(mediaUrl)}
-                  >
-                    ×
-                  </button>
+              {existingMedia.length > 0 && (
+                <div className="media-preview">
+                  {existingMedia.map((mediaUrl, index) => (
+                    <div key={index} className="media-item">
+                      {mediaUrl.endsWith('.mp4') ? (
+                        <>
+                          <video controls>
+                            <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
+                          </video>
+                          <span className="file-type-badge">Video</span>
+                        </>
+                      ) : (
+                        <>
+                          <img src={`http://localhost:8080${mediaUrl}`} alt={`Media ${index}`} />
+                          <span className="file-type-badge">Image</span>
+                        </>
+                      )}
+                      <button
+                        className="media-remove"
+                        onClick={() => handleDeleteMedia(mediaUrl)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-            
-            <div className="file-upload">
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/jpg,video/mp4"
-                multiple
-                onChange={handleNewMediaChange}
-              />
-            </div>
-          </div>
 
-          <div className="form-actions">
-            <button 
-              type="submit" 
-              className="register-button"
-              disabled={loading}
-            >
-              {loading ? 'Updating...' : 'Update Post'}
-            </button>
-          </div>
-        </form>
+            <div className="form-actions">
+              <button type="submit" className="submit-button" disabled={loading}>
+                {loading ? 'Updating...' : 'Update Post'}
+              </button>
+              <button 
+                type="button" 
+                className="delete-button"
+                onClick={handleDelete}
+              >
+                Delete Post
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

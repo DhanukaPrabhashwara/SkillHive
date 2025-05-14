@@ -7,12 +7,14 @@
 }
 
 .profile-content {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
- 
+  padding: 0 20px;
 }
 
 .profile-card {
+  max-width: 800px;
+  margin: 0 auto 50px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   border-radius: 30px;
@@ -21,7 +23,6 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   gap: 40px;
-  margin-bottom: 50px;
   transition: transform 0.3s ease;
 }
 
@@ -193,15 +194,34 @@
   letter-spacing: 0.5px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .profile-card {
-    flex-direction: column;
+    max-width: 600px;
     padding: 30px;
   }
 
   .profile-image {
-    width: 220px;
-    height: 220px;
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-card {
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    gap: 25px;
+  }
+
+  .profile-image {
+    width: 200px;
+    height: 200px;
+  }
+
+  .pro_left_card {
+    width: 100%;
   }
 
   .username_card {

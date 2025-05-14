@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
+import { FaEdit, FaHeart, FaShare } from 'react-icons/fa';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
 import NavBar from '../../Components/NavBar/NavBar';
-import { IoIosCreate } from "react-icons/io";
+import { IoIosCreate } from 'react-icons/io';
 import './Achievements.css';
 
 function AllAchievements() {
@@ -24,7 +24,6 @@ function AllAchievements() {
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-
     const filtered = progressData.filter(
       (achievement) =>
         achievement.title.toLowerCase().includes(query) ||
@@ -33,20 +32,51 @@ function AllAchievements() {
     setFilteredData(filtered);
   };
 
+  const handleLike = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/achievements/${id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      if (response.ok) {
+        const updatedAchievement = await response.json();
+        setFilteredData((prev) =>
+          prev.map((item) => (item.id === id ? updatedAchievement : item))
+        );
+      }
+    } catch (error) {
+      console.error('Error liking achievement:', error);
+    }
+  };
+
+  const handleShare = (achievement) => {
+    const shareData = {
+      title: achievement.title,
+      text: achievement.description,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch((error) => console.error('Error sharing:', error));
+    } else {
+      alert('Share feature not supported in this browser.');
+    }
+  };
+
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Achievements?')) {
+    if (window.confirm('Are you sure you want to delete this Achievement?')) {
       try {
         const response = await fetch(`http://localhost:8080/achievements/${id}`, {
           method: 'DELETE',
         });
         if (response.ok) {
-          alert('Achievements deleted successfully!');
+          alert('Achievement deleted successfully!');
           setFilteredData(filteredData.filter((progress) => progress.id !== id));
         } else {
-          alert('Failed to delete Achievements.');
+          alert('Failed to delete Achievement.');
         }
       } catch (error) {
-        console.error('Error deleting Achievements:', error);
+        console.error('Error deleting Achievement:', error);
       }
     }
   };
@@ -93,6 +123,22 @@ function AllAchievements() {
                   <div className="achievement-meta">
                     <span className="achievement-owner">{achievement.postOwnerName}</span>
                     <span className="achievement-date">{achievement.date}</span>
+                  </div>
+                  <div className="achievement-badges">
+                    {achievement.badges && achievement.badges.map((badge) => (
+                      <span key={badge} className="badge">{badge}</span>
+                    ))}
+                  </div>
+                  <div className="achievement-interactions">
+                    <button
+                      className={`interaction-btn ${achievement.likes && achievement.likes.includes(userId) ? 'liked' : ''}`}
+                      onClick={() => handleLike(achievement.id)}
+                    >
+                      <FaHeart /> {achievement.likes ? achievement.likes.length : 0}
+                    </button>
+                    <button className="interaction-btn" onClick={() => handleShare(achievement)}>
+                      <FaShare /> Share
+                    </button>
                   </div>
                   {achievement.postOwnerID === userId && (
                     <div className="achievement-actions">

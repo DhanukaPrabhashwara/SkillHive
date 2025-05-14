@@ -1,49 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { IoSend } from "react-icons/io5";
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import { BiSolidLike } from "react-icons/bi";
-import Modal from 'react-modal';
+import { FiUploadCloud } from 'react-icons/fi';
+import { FaRegHeart, FaHeart, FaRegComment, FaEdit, FaTrash } from 'react-icons/fa';
 import NavBar from '../../Components/NavBar/NavBar';
-import { IoIosCreate } from "react-icons/io";
-import { MdDelete } from "react-icons/md";
-import { GrUpdate } from "react-icons/gr";
-import { FiSave } from "react-icons/fi";
-import { TbPencilCancel } from "react-icons/tb";
-import { FaCommentAlt } from "react-icons/fa";
+import Modal from 'react-modal';
+import './MyPost.css';
+
 Modal.setAppElement('#root');
 
 function MyAllPost() {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [postOwners, setPostOwners] = useState({});
-  const [showMyPosts, setShowMyPosts] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
-  const [followedUsers, setFollowedUsers] = useState([]); // State to track followed users
-  const [newComment, setNewComment] = useState({}); // State for new comments
-  const [editingComment, setEditingComment] = useState({}); // State for editing comments
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const loggedInUserID = localStorage.getItem('userID'); // Get the logged-in user's ID
+  const loggedInUserID = localStorage.getItem('userID');
 
   useEffect(() => {
-    // Fetch all posts from the backend
     const fetchPosts = async () => {
       try {
         const response = await axios.get('http://localhost:8080/posts');
-        const userID = localStorage.getItem('userID'); // Get the logged-in user's ID
-
-        // Filter posts to include only those with the logged-in user's ID
+        const userID = localStorage.getItem('userID');
         const userPosts = response.data.filter((post) => post.userID === userID);
 
         setPosts(userPosts);
-        setFilteredPosts(userPosts); // Initially show filtered posts
+        setFilteredPosts(userPosts);
 
-        // Fetch post owners' names
-        const userIDs = [...new Set(userPosts.map((post) => post.userID))]; // Get unique userIDs
+        const userIDs = [...new Set(userPosts.map((post) => post.userID))];
         const ownerPromises = userIDs.map((userID) =>
           axios.get(`http://localhost:8080/user/${userID}`)
             .then((res) => ({
@@ -60,43 +46,26 @@ function MyAllPost() {
           acc[owner.userID] = owner.fullName;
           return acc;
         }, {});
-        console.log('Post Owners Map:', ownerMap); // Debug log to verify postOwners map
         setPostOwners(ownerMap);
       } catch (error) {
-        console.error('Error fetching posts:', error); // Log error for fetching posts
+        console.error('Error fetching posts:', error);
       }
     };
 
     fetchPosts();
   }, []);
 
-  useEffect(() => {
-    const fetchFollowedUsers = async () => {
-      const userID = localStorage.getItem('userID');
-      if (userID) {
-        try {
-          const response = await axios.get(`http://localhost:8080/user/${userID}/followedUsers`);
-          setFollowedUsers(response.data);
-        } catch (error) {
-          console.error('Error fetching followed users:', error);
-        }
-      }
-    };
-
-    fetchFollowedUsers();
-  }, []);
-
   const handleDelete = async (postId) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this post?');
     if (!confirmDelete) {
-      return; // Exit if the user cancels the confirmation
+      return;
     }
 
     try {
       await axios.delete(`http://localhost:8080/posts/${postId}`);
       alert('Post deleted successfully!');
-      setPosts(posts.filter((post) => post.id !== postId)); // Remove the deleted post from the UI
-      setFilteredPosts(filteredPosts.filter((post) => post.id !== postId)); // Update filtered posts
+      setPosts(posts.filter((post) => post.id !== postId));
+      setFilteredPosts(filteredPosts.filter((post) => post.id !== postId));
     } catch (error) {
       console.error('Error deleting post:', error);
       alert('Failed to delete post.');
@@ -104,18 +73,7 @@ function MyAllPost() {
   };
 
   const handleUpdate = (postId) => {
-    navigate(`/updatePost/${postId}`); // Navigate to the UpdatePost page with the post ID
-  };
-
-  const handleMyPostsToggle = () => {
-    if (showMyPosts) {
-      // Show all posts
-      setFilteredPosts(posts);
-    } else {
-      // Filter posts by logged-in user ID
-      setFilteredPosts(posts.filter((post) => post.userID === loggedInUserID));
-    }
-    setShowMyPosts(!showMyPosts); // Toggle the state
+    navigate(`/updatePost/${postId}`);
   };
 
   const handleLike = async (postId) => {
@@ -129,7 +87,6 @@ function MyAllPost() {
         params: { userID },
       });
 
-      // Update the specific post's likes in the state
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId ? { ...post, likes: response.data.likes } : post
@@ -146,137 +103,10 @@ function MyAllPost() {
     }
   };
 
-  const handleFollowToggle = async (postOwnerID) => {
-    const userID = localStorage.getItem('userID');
-    if (!userID) {
-      alert('Please log in to follow/unfollow users.');
-      return;
-    }
-    try {
-      if (followedUsers.includes(postOwnerID)) {
-        // Unfollow logic
-        await axios.put(`http://localhost:8080/user/${userID}/unfollow`, { unfollowUserID: postOwnerID });
-        setFollowedUsers(followedUsers.filter((id) => id !== postOwnerID));
-      } else {
-        // Follow logic
-        await axios.put(`http://localhost:8080/user/${userID}/follow`, { followUserID: postOwnerID });
-        setFollowedUsers([...followedUsers, postOwnerID]);
-      }
-    } catch (error) {
-      console.error('Error toggling follow state:', error);
-    }
-  };
-
-  const handleAddComment = async (postId) => {
-    const userID = localStorage.getItem('userID');
-    if (!userID) {
-      alert('Please log in to comment.');
-      return;
-    }
-    const content = newComment[postId] || ''; // Get the comment content for the specific post
-    if (!content.trim()) {
-      alert('Comment cannot be empty.');
-      return;
-    }
-    try {
-      const response = await axios.post(`http://localhost:8080/posts/${postId}/comment`, {
-        userID,
-        content,
-      });
-
-      // Update the specific post's comments in the state
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId ? { ...post, comments: response.data.comments } : post
-        )
-      );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
-          post.id === postId ? { ...post, comments: response.data.comments } : post
-        )
-      );
-
-      setNewComment({ ...newComment, [postId]: '' });
-    } catch (error) {
-      console.error('Error adding comment:', error);
-    }
-  };
-
-  const handleDeleteComment = async (postId, commentId) => {
-    const userID = localStorage.getItem('userID');
-    try {
-      await axios.delete(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        params: { userID },
-      });
-
-      // Update state to remove the deleted comment
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
-            : post
-        )
-      );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: post.comments.filter((comment) => comment.id !== commentId) }
-            : post
-        )
-      );
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-    }
-  };
-
-  const handleSaveComment = async (postId, commentId, content) => {
-    try {
-      const userID = localStorage.getItem('userID');
-      await axios.put(`http://localhost:8080/posts/${postId}/comment/${commentId}`, {
-        userID,
-        content,
-      });
-
-      // Update the comment in state
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? {
-              ...post,
-              comments: post.comments.map((comment) =>
-                comment.id === commentId ? { ...comment, content } : comment
-              ),
-            }
-            : post
-        )
-      );
-
-      setFilteredPosts((prevFilteredPosts) =>
-        prevFilteredPosts.map((post) =>
-          post.id === postId
-            ? {
-              ...post,
-              comments: post.comments.map((comment) =>
-                comment.id === commentId ? { ...comment, content } : comment
-              ),
-            }
-            : post
-        )
-      );
-
-      setEditingComment({}); // Clear editing state
-    } catch (error) {
-      console.error('Error saving comment:', error);
-    }
-  };
-
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
-    // Filter posts based on title, description, or category
     const filtered = posts.filter(
       (post) =>
         post.title.toLowerCase().includes(query) ||
@@ -297,208 +127,127 @@ function MyAllPost() {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-background">
-        <div className="animated-shape"></div>
-        <div className="animated-shape"></div>
-        <div className="animated-shape"></div>
-      </div>
-      
-      <div className="register-card">
-        <div className="register-header">
+    <div className="my-posts-page">
+      <NavBar />
+      <div className="my-posts-container">
+        <div className="posts-header">
           <h1>My Posts</h1>
-          <p>View and manage your posts</p>
+          <div className="header-controls">
+            <input
+              type="text"
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={handleSearch}
+              className="search-input"
+            />
+            <button 
+              className="new-post-button"
+              onClick={() => navigate('/addNewPost')}
+            >
+              Create Post
+            </button>
+          </div>
         </div>
 
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search posts..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="search-input"
-          />
-        </div>
-
-        <div className="post-grid">
+        <div className="posts-grid">
           {filteredPosts.length === 0 ? (
-            <div className="no-items-message">
-              <h3>No Posts Found</h3>
+            <div className="empty-state">
+              <FiUploadCloud size={48} />
+              <h3>No Posts Yet</h3>
               <p>Share your first post with the community</p>
-              <button
-                className="register-button"
-                onClick={() => (window.location.href = '/addNewPost')}
-              >
+              <button className="new-post-button" onClick={() => navigate('/addNewPost')}>
                 Create Post
               </button>
             </div>
           ) : (
             filteredPosts.map((post) => (
               <div key={post.id} className="post-card">
-                <div className='user_details_card'>
-                  <div className='name_section_post'>
-                    <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
-                    {post.userID !== loggedInUserID && (
-                      <button
-                        className={followedUsers.includes(post.userID) ? 'flow_btn_unfalow' : 'flow_btn'}
-                        onClick={() => handleFollowToggle(post.userID)}
+                <div className="post-header">
+                  <div className="post-author">
+                    <div className="author-avatar">
+                      {postOwners[post.userID]?.[0] || 'A'}
+                    </div>
+                    <div className="author-info">
+                      <h3>{postOwners[post.userID] || 'Anonymous'}</h3>
+                      <span>{post.category || 'Uncategorized'}</span>
+                    </div>
+                  </div>
+                  <div className="post-actions">
+                    <button 
+                      className="action-btn edit"
+                      onClick={() => handleUpdate(post.id)}
+                    >
+                      <FaEdit className="action-icon" />
+                      <span>Update</span>
+                    </button>
+                    <button 
+                      className="action-btn delete"
+                      onClick={() => handleDelete(post.id)}
+                    >
+                      <FaTrash className="action-icon" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="post-content">
+                  <h2>{post.title}</h2>
+                  <p>{post.description}</p>
+                </div>
+
+                {post.media && post.media.length > 0 && (
+                  <div className={`media-grid media-count-${Math.min(post.media.length, 4)}`}>
+                    {post.media.slice(0, 4).map((url, index) => (
+                      <div 
+                        key={index}
+                        className="media-item"
+                        onClick={() => openModal(url)}
                       >
-                        {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
-                      </button>
-                    )}
-                  </div>
-                  {post.userID === loggedInUserID && (
-                    <div>
-                      <div className='action_btn_icon_post'>
-                        <FaEdit
-                          onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                        <RiDeleteBin6Fill
-                          onClick={() => handleDelete(post.id)}
-                          className='action_btn_icon' />
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className='user_details_card_di'>
-                  <p className='card_post_title'>{post.title}</p>
-                  <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-                  <p className='card_post_category'>Category: {post.category || 'Uncategorized'}</p>
-                </div>
-                <div className="media-collage">
-                  {post.media.slice(0, 4).map((mediaUrl, index) => (
-                    <div
-                      key={index}
-                      className={`media-item ${post.media.length > 4 && index === 3 ? 'media-overlay' : ''}`}
-                      onClick={() => openModal(mediaUrl)}
-                    >
-                      {mediaUrl.endsWith('.mp4') ? (
-                        <video controls>
-                          <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <img src={`http://localhost:8080${mediaUrl}`} alt="Post Media" />
-                      )}
-                      {post.media.length > 4 && index === 3 && (
-                        <div className="overlay-text">+{post.media.length - 4}</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div className='like_coment_lne'>
-                  <div className='like_btn_con'>
-                    <BiSolidLike
-                      className={post.likes?.[localStorage.getItem('userID')] ? 'unlikebtn' : 'likebtn'}
-                      onClick={() => handleLike(post.id)}
-                    >
-                      {post.likes?.[localStorage.getItem('userID')] ? 'Unlike' : 'Like'}
-                    </BiSolidLike>
-                    <p className='like_num'>
-                      {Object.values(post.likes || {}).filter((liked) => liked).length}
-                    </p>
-                  </div>
-                  <div className=''>
-                    <div className='like_btn_con'>
-                      <FaCommentAlt
-                        className='combtn'
-                      />
-                      <p className='like_num'>
-                        {post.comments?.length || 0}
-                      </p>
-                    </div>
-
-                  </div>
-                </div>
-                <div className='withsett'>
-                  <div className='add_comennt_con'>
-                    <input
-                      type="text"
-                      className='add_coment_input'
-                      placeholder="Add a comment"
-                      value={newComment[post.id] || ''}
-                      onChange={(e) =>
-                        setNewComment({ ...newComment, [post.id]: e.target.value })
-                      }
-                    />
-                    <IoSend
-                      onClick={() => handleAddComment(post.id)}
-                      className='add_coment_btn'
-                    />
-                  </div>
-                  <br/>
-                  {post.comments?.map((comment) => (
-                    <div key={comment.id} className='coment_full_card'>
-                      <div className='comnt_card'>
-                        <p className='comnt_card_username'>{comment.userFullName}</p>
-                        {editingComment.id === comment.id ? (
-                          <input
-                            type="text"
-                            className='edit_comment_input'
-                            value={editingComment.content}
-                            onChange={(e) =>
-                              setEditingComment({ ...editingComment, content: e.target.value })
-                            }
-                            autoFocus
-                          />
+                        {url.endsWith('.mp4') ? (
+                          <div className="video-preview">
+                            <video>
+                              <source src={`http://localhost:8080${url}`} type="video/mp4" />
+                            </video>
+                            <div className="video-indicator">▶</div>
+                          </div>
                         ) : (
-                          <p className='comnt_card_coment'>{comment.content}</p>
+                          <img 
+                            src={`http://localhost:8080${url}`} 
+                            alt={`Post media ${index + 1}`}
+                          />
+                        )}
+                        {post.media.length > 4 && index === 3 && (
+                          <div className="more-overlay">
+                            +{post.media.length - 4}
+                          </div>
                         )}
                       </div>
+                    ))}
+                  </div>
+                )}
 
-                      <div className='coment_action_btn'>
-                        {comment.userID === loggedInUserID && (
-                          <>
-                            {editingComment.id === comment.id ? (
-                              <>
-                                <FiSave className='coment_btn'
-                                  onClick={() =>
-                                    handleSaveComment(post.id, comment.id, editingComment.content)
-                                  } />
-                                <TbPencilCancel className='coment_btn'
-                                  onClick={() => setEditingComment({})} />
-
-                              </>
-                            ) : (
-                              <>
-                                <GrUpdate className='coment_btn' onClick={() =>
-                                  setEditingComment({ id: comment.id, content: comment.content })
-                                } />
-                                <MdDelete className='coment_btn' onClick={() => handleDeleteComment(post.id, comment.id)} />
-                              </>
-                            )}
-                          </>
-                        )}
-                        {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
-                          <button
-                            className='coment_btn'
-                            onClick={() => handleDeleteComment(post.id, comment.id)}
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-
+                <div className="post-interactions">
+                  <button 
+                    className={`like-button ${post.likes?.[loggedInUserID] ? 'active' : ''}`}
+                    onClick={() => handleLike(post.id)}
+                  >
+                    {post.likes?.[loggedInUserID] ? <FaHeart /> : <FaRegHeart />}
+                    <span>{Object.values(post.likes || {}).filter(Boolean).length}</span>
+                  </button>
+                  <button className="comment-button">
+                    <FaRegComment />
+                    <span>{post.comments?.length || 0}</span>
+                  </button>
                 </div>
               </div>
             ))
           )}
         </div>
-
-        <button
-          className="floating-add-button"
-          onClick={() => (window.location.href = '/addNewPost')}
-        >
-          <IoIosCreate />
-        </button>
       </div>
 
-      {/* Modal for displaying full media */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
-        contentLabel="Media Modal"
         className="media-modal"
         overlayClassName="media-modal-overlay"
       >

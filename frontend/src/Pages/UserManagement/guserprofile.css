@@ -1,0 +1,206 @@
+.continer {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63);
+    padding: 80px 20px 20px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .continSection {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .profile-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  }
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .profile-image:hover {
+    border-color: #6b46c1;
+  }
+  
+  .pro_left_card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .user_data_card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .user_data_card_new {
+    margin-bottom: 15px;
+  }
+  
+  .username_card {
+    font-size: 28px;
+    font-weight: 600;
+    background: linear-gradient(45deg, #fff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+  }
+  
+  .user_data_card_item_bio {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .user_data_card_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+  }
+  
+  .user_data_card_icon {
+    color: #6b46c1;
+    font-size: 18px;
+  }
+  
+  .profile-actions {
+    margin-top: 20px;
+  }
+  
+  .delete-button {
+    background: linear-gradient(45deg, #e53e3e, #f56565);
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .delete-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(229, 62, 62, 0.3);
+  }
+  
+  .my_post_link {
+    max-width: 800px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .my_post_link_card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .my_post_link_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .my_post_name_img1,
+  .my_post_name_img2,
+  .my_post_name_img3 {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #6b46c1, #805ad5);
+    margin-bottom: 15px;
+  }
+  
+  .my_post_name_img1 {
+    background-image: url('../UserManagement/img/post.png'); /* Replace with actual icon path */
+    background-size: cover;
+  }
+  
+  .my_post_name_img2 {
+    background-image: url('../UserManagement/img/skilpost.png'); /* Replace with actual icon path */
+    background-size: cover;
+  }
+  
+  .my_post_name_img3 {
+    background-image: url('../UserManagement/img/achive.png'); /* Replace with actual icon path */
+    background-size: cover;
+  }
+  
+  .my_post_link_card_name {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .profile-card {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .profile-image {
+      width: 120px;
+      height: 120px;
+    }
+  
+    .username_card {
+      font-size: 24px;
+    }
+  
+    .my_post_link {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .continSection {
+      padding: 10px;
+    }
+  
+    .profile-card {
+      padding: 20px;
+    }
+  
+    .delete-button {
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+  }
