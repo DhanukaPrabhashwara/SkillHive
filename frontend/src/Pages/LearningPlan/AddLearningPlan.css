@@ -217,4 +217,22 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 15px rgba(107, 70, 193, 0.3);
   }
+
+  .newpart-set-icon {
+    font-size: 32px; /* Increased from the default size */
+    padding: 8px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+  }
   
+  .newpart-set-icon:hover {
+    color: #6b46c1;
+    transform: scale(1.1);
+  }
+  
+  .newpart-set {
+    display: flex;
+    gap: 20px; /* Increased gap between icons */
+    margin-bottom: 15px;
+  }
