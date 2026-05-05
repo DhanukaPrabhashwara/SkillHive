@@ -1,7 +1,7 @@
 package backend.controller;
 
 import backend.model.UserModel;
-import backend.repository.userRepository;
+import backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;

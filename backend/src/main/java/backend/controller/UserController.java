@@ -14,12 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -261,19 +263,44 @@ public class UserController {
         String code = request.get("code");
 
         if (email == null || code == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Email and code are required."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Email and code are required."));
         }
 
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("Your Verification Code");
-            message.setText("Your verification code is: " + code);
-            mailSender.send(message);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            String htmlContent = String.format(
+                "<div style='font-family: Arial, sans-serif; padding: 20px;'>" +
+                "<h2 style='color: #333;'>SkillHive Email Verification</h2>" +
+                "<p>Your verification code is: <strong style='font-size: 24px; color: #4CAF50;'>%s</strong></p>" +
+                "<p style='color: #666;'>This code will expire in 10 minutes.</p>" +
+                "<p style='color: #999; font-size: 12px;'>If you didn't request this code, please ignore this email.</p>" +
+                "</div>", code);
 
-            return ResponseEntity.ok(Map.of("message", "Verification code sent successfully."));
+            helper.setTo(email);
+            helper.setFrom("sendtocynos@gmail.com"); // Set from address
+            helper.setSubject("SkillHive - Email Verification");
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Verification code sent successfully.",
+                "success", true
+            ));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to send verification code."));
+            e.printStackTrace();
+            String errorMsg = e.getMessage();
+            if (e.getCause() != null) {
+                errorMsg += " | Cause: " + e.getCause().getMessage();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                        "message", "Failed to send verification code: " + errorMsg,
+                        "success", false
+                    ));
         }
     }
 }
